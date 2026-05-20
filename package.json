@@ -1,0 +1,16 @@
+{
+  "name": "intellisector-root",
+  "version": "1.0.0",
+  "description": "Enterprise Command Center Root Orchestrator",
+  "scripts": {
+    "dev:frontend": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" npm run dev --prefix frontend",
+    "dev:backend": "cd backend && uvicorn server:app --reload",
+    "start:frontend": "npm run start --prefix frontend"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
