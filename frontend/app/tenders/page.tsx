@@ -8,58 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { API_URL } from "@/lib/config";
 
-const mockTenders = [
-  {
-    id: "TEN-9081",
-    title: "Gujarat Pipeline Grid Addition Phase 2",
-    issuer: "Gujarat Gas Ltd",
-    sector: "Gas & LNG",
-    value: "₹1,500Cr",
-    region: "Western Region",
-    status: "Under Evaluation",
-    deadline: "May 25, 2026",
-    matchScore: "94%"
-  },
-  {
-    id: "TEN-9082",
-    title: "Halol API Biosafety Level-3 Expansion",
-    issuer: "Sun Pharmaceutical",
-    sector: "Pharma API",
-    value: "₹375Cr",
-    region: "Southern Region",
-    status: "Bidding Open",
-    deadline: "Jun 12, 2026",
-    matchScore: "88%"
-  },
-  {
-    id: "TEN-9083",
-    title: "National Bullet Train Corridor Engineering JV",
-    issuer: "NHSRCL",
-    sector: "EPC & Infra",
-    value: "₹10,000Cr",
-    region: "Northern Region",
-    status: "Contract Awarded",
-    deadline: "Concluded",
-    matchScore: "97%"
-  },
-  {
-    id: "TEN-9084",
-    title: "Morbi Compressed Bio-Gas Grid Setup",
-    issuer: "Adani Gas",
-    sector: "Gas & LNG",
-    value: "₹540Cr",
-    region: "Western Region",
-    status: "Bidding Open",
-    deadline: "Jun 04, 2026",
-    matchScore: "91%"
-  }
-];
-
 export default function TenderIntel() {
   const [selectedSector, setSelectedSector] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [exportSuccess, setExportSuccess] = useState(false);
-  const [tenders, setTenders] = useState<any[]>(mockTenders);
+  const [tenders, setTenders] = useState<any[]>([]);
   const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
@@ -88,7 +41,6 @@ export default function TenderIntel() {
         }
       } catch (err) {
         console.error("Tenders Fetch Error:", err);
-        console.warn("Backend API offline, falling back to static local tenders.");
       }
     }
     fetchTenders();

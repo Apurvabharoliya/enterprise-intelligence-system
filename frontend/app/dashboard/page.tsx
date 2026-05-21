@@ -10,49 +10,11 @@ import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { API_URL } from "@/lib/config";
 
-const mockTenderData = [
-  { name: "Jan", value: 120 },
-  { name: "Feb", value: 180 },
-  { name: "Mar", value: 150 },
-  { name: "Apr", value: 240 },
-  { name: "May", value: 290 },
-  { name: "Jun", value: 380 },
-];
-
-const mockSectorHeatmap = [
-  { name: "Gas Distribution", value: 450, color: "#10B981" },
-  { name: "EPC & Infra", value: 680, color: "#F59E0B" },
-  { name: "Pharma API", value: 310, color: "#8B5CF6" },
-];
-
-const mockFeed = [
-  {
-    id: 1,
-    time: "May 20, 2026",
-    sector: "Gas & LNG",
-    title: "GAIL announces new pipeline expansion in Western Grid",
-    summary: "Estimated investment at ₹10,000 Cr with tenders opening next month.",
-    risk: "Low",
-    link: "#",
-    color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/5",
-  },
-  {
-    id: 2,
-    time: "May 19, 2026",
-    sector: "Pharma API",
-    title: "FDA approves API facility for Sun Pharma in Gujarat",
-    summary: "Successful audit completed. Production to scale by 40% in Q3.",
-    risk: "None",
-    link: "#",
-    color: "border-violet-500/30 text-violet-400 bg-violet-500/5",
-  }
-];
-
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
-  const [feed, setFeed] = useState<any[]>(mockFeed);
-  const [sectorHeatmap, setSectorHeatmap] = useState<any[]>(mockSectorHeatmap);
-  const [tenderData, setTenderData] = useState<any[]>(mockTenderData);
+  const [feed, setFeed] = useState<any[]>([]);
+  const [sectorHeatmap, setSectorHeatmap] = useState<any[]>([]);
+  const [tenderData, setTenderData] = useState<any[]>([]);
   const [isLive, setIsLive] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
 
@@ -104,17 +66,23 @@ export default function Dashboard() {
           }));
           setTenderData(mappedTenders);
 
+          if (analyticsData.monthly.length > 0) {
+            const lastMonth = analyticsData.monthly[analyticsData.monthly.length - 1];
+            setSectorHeatmap([
+              { name: "Gas Distribution", value: lastMonth.gas, color: "#10B981" },
+              { name: "EPC & Infra", value: lastMonth.epc, color: "#F59E0B" },
+              { name: "Pharma API", value: lastMonth.pharma, color: "#8B5CF6" }
+            ]);
+          }
+
           setIsLive(true);
         }
       } catch (err) {
         console.error("Dashboard Fetch Error:", err);
-        console.warn("Backend API offline, utilizing static local dashboard sets.");
       }
     }
-    if (!loading) {
-      loadDashboardData();
-    }
-  }, [loading]);
+    loadDashboardData();
+  }, []);
 
   return (
     <div className="flex h-screen bg-background overflow-hidden font-sans">

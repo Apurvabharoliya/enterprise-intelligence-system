@@ -6,13 +6,6 @@ import { BellRing, Send, MessageSquare, Mail, Check, ShieldAlert, Cpu, Terminal,
 import { Input } from "@/components/ui/input";
 import { API_URL } from "@/lib/config";
 
-const initialLogs = [
-  { time: "20:01:05", type: "SYSTEM", message: "Initial security handshake established with telemetry gateway." },
-  { time: "19:54:12", type: "TELEGRAM", message: "Daily summary dispatch sent successfully to chat group #90872651." },
-  { time: "19:42:01", type: "EMAIL", message: "Automated report compiled & delivered to lead.analyst@company.com." },
-  { time: "19:15:30", type: "WHATSAPP", message: "Morbi bio-gas pipeline pressure deviation alert pushed to +91 98765 43210." },
-];
-
 export default function Notifications() {
   const [testSent, setTestSent] = useState("");
   const [testResult, setTestResult] = useState<any>(null);
@@ -20,7 +13,7 @@ export default function Notifications() {
   const [telegramChatId, setTelegramChatId] = useState("90872651");
   const [whatsappPhone, setWhatsappPhone] = useState("+91 98765 43210");
   const [emailAddress, setEmailAddress] = useState("lead.analyst@company.com");
-  const [logs, setLogs] = useState<any[]>(initialLogs);
+  const [logs, setLogs] = useState<any[]>([]);
 
   const [toggles, setToggles] = useState({
     telegram: true,
@@ -63,18 +56,7 @@ export default function Notifications() {
       }
     } catch (err) {
       console.error("Notifications Fetch Error:", err);
-      console.warn("Backend not running, falling back to simulated dispatch payload.");
-      const mockResult = {
-        success: true,
-        message_id: `MSG-MOCK-${Math.floor(Math.random() * 900000 + 100000)}`,
-        delivered_payload: `A simulated offline payload summarizing FDA observations was securely sent to the ${channel} node.`
-      };
-      setTestResult(mockResult);
-      
-      setLogs(prev => [
-        { time: timestamp, type: `${channel.toUpperCase()} (MOCK)`, message: `Offline dispatch simulated successfully: target ${target}` },
-        ...prev
-      ]);
+      setTestResult({ message_id: "ERROR", delivered_payload: "Failed to reach API server." });
     }
 
     setTimeout(() => {

@@ -50,7 +50,6 @@ export default function EventTracker() {
         }
       } catch (err) {
         console.error("Events Fetch Error:", err);
-        console.warn("Backend API offline, falling back to local events catalog.");
       }
     }
     fetchEvents();

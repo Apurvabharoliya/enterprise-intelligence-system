@@ -10,69 +10,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { API_URL } from "@/lib/config";
 
-const mockNews = [
-  {
-    id: 1,
-    title: "Morbi Ceramic Cluster Demands 15% Gas Supply Increase",
-    sector: "Gas & LNG",
-    sectorColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-    date: "May 19, 2026",
-    sentiment: "Bullish",
-    risk: "Low",
-    source: "PNGRB Watcher",
-    summary: "Local city gas providers are requesting emergency pipeline load increases from the Central grid. High logistics demand pushes regional tariffs.",
-    bulletPoints: [
-      "Morbi clusters demand high gas capacity allocations.",
-      "Requires temporary high-pressure pipelines activations.",
-      "PNGRB reviewing tariff adjustments scheduled next week."
-    ],
-    impact: "Provides short term bullish gas sales volume."
-  },
-  {
-    id: 2,
-    title: "Sun Pharma Halol API Plant Concludes Clean Audit",
-    sector: "Pharma API",
-    sectorColor: "text-violet-400 bg-violet-500/10 border-violet-500/20",
-    date: "May 18, 2026",
-    sentiment: "Bullish",
-    risk: "Low",
-    source: "FDA Sentinel",
-    summary: "FDA regulatory officers concluded a 5-day procedural inspection with zero critical form 483 warnings. Unit remains at highest compliance level.",
-    bulletPoints: [
-      "Observations were minimal and not linked to generic failures.",
-      "Maintains continuous export clearances to primary European channels.",
-      "Clean status provides strong structural support to API portfolios."
-    ],
-    impact: "Maintains optimal margins on generic active syntheses."
-  },
-  {
-    id: 3,
-    title: "L&T Emerges as Lowest Bidder for Hydrological Power Unit",
-    sector: "EPC & Infra",
-    sectorColor: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-    date: "May 17, 2026",
-    sentiment: "Bullish",
-    risk: "Low",
-    source: "NHPC Tenders",
-    summary: "The civil infrastructure giant submitted a ₹3,140 Crore bid for regional hydrological water corridor projects in Maharashtra. Bidding competitors trailing by 8%.",
-    bulletPoints: [
-      "L&T infrastructure leads the bid threshold margins.",
-      "Project completion schedule target set at 36 months.",
-      "Guarantees continuous cement and structural steel procurements."
-    ],
-    impact: "Fosters steady civil sector segment growth vectors."
-  }
-];
-
 export default function NewsIntel() {
   const [selectedSector, setSelectedSector] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
   const [digest, setDigest] = useState({
-    title: "Morbi Ceramic demand grid upgrades; record bidding blocks.",
-    summary: "AI aggregated summaries indicate local city gas providers requesting emergency pipeline volume loads. High logistics demands push tariffs while Pharma API audits conclude clean."
+    title: "Loading Intelligence...",
+    summary: "Synchronizing with secure telemetry nodes to aggregate daily sector developments."
   });
-  const [articles, setArticles] = useState<any[]>(mockNews);
+  const [articles, setArticles] = useState<any[]>([]);
   const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
@@ -120,7 +66,6 @@ export default function NewsIntel() {
         }
       } catch (err) {
         console.error("News Fetch Error:", err);
-        console.warn("FastAPI backend down, falling back to local news structures.");
       }
     }
     fetchNews();
