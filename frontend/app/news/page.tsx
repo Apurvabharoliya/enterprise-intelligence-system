@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+import { API_URL } from "@/lib/config";
 
 const mockNews = [
   {
@@ -78,7 +78,11 @@ export default function NewsIntel() {
   useEffect(() => {
     async function fetchNews() {
       try {
-        const res = await fetch(`${API_URL}/api/news`);
+        const res = await fetch(`${API_URL}/api/news`, { cache: 'no-store' });
+        if (!res.ok) {
+          console.error("API response error:", res.status);
+          throw new Error(`API error status: ${res.status}`);
+        }
         if (res.ok) {
           const data = await res.json();
           // Map backend response structures into identical frontend variables
@@ -115,6 +119,7 @@ export default function NewsIntel() {
           setIsLive(true);
         }
       } catch (err) {
+        console.error("News Fetch Error:", err);
         console.warn("FastAPI backend down, falling back to local news structures.");
       }
     }

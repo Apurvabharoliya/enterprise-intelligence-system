@@ -6,8 +6,7 @@ import { Search, Filter, Briefcase, Calendar, MapPin, IndianRupee, Download, Tre
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+import { API_URL } from "@/lib/config";
 
 const mockTenders = [
   {
@@ -66,7 +65,11 @@ export default function TenderIntel() {
   useEffect(() => {
     async function fetchTenders() {
       try {
-        const res = await fetch(`${API_URL}/api/tenders`);
+        const res = await fetch(`${API_URL}/api/tenders`, { cache: 'no-store' });
+        if (!res.ok) {
+          console.error("API response error:", res.status);
+          throw new Error(`API error status: ${res.status}`);
+        }
         if (res.ok) {
           const data = await res.json();
           const mappedTenders = data.map((t: any) => ({
@@ -84,6 +87,7 @@ export default function TenderIntel() {
           setIsLive(true);
         }
       } catch (err) {
+        console.error("Tenders Fetch Error:", err);
         console.warn("Backend API offline, falling back to static local tenders.");
       }
     }

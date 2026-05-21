@@ -4,8 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { BellRing, Send, MessageSquare, Mail, Check, ShieldAlert, Cpu, Terminal, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+import { API_URL } from "@/lib/config";
 
 const initialLogs = [
   { time: "20:01:05", type: "SYSTEM", message: "Initial security handshake established with telemetry gateway." },
@@ -45,8 +44,13 @@ export default function Notifications() {
       const res = await fetch(`${API_URL}/api/notifications/test`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ channel, target, payload: "FDA observation surveillance check" })
+        body: JSON.stringify({ channel, target, payload: "FDA observation surveillance check" }),
+        cache: 'no-store'
       });
+      if (!res.ok) {
+        console.error("API response error:", res.status);
+        throw new Error(`API error status: ${res.status}`);
+      }
       if (res.ok) {
         const data = await res.json();
         setTestResult(data);
@@ -58,6 +62,7 @@ export default function Notifications() {
         ]);
       }
     } catch (err) {
+      console.error("Notifications Fetch Error:", err);
       console.warn("Backend not running, falling back to simulated dispatch payload.");
       const mockResult = {
         success: true,

@@ -8,8 +8,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ChevronRight, MapPin, Activity, Clock, ShieldAlert, AlertTriangle } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+import { API_URL } from "@/lib/config";
 
 export default function EventTracker() {
   const [selectedSector, setSelectedSector] = useState("All");
@@ -21,7 +20,11 @@ export default function EventTracker() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await fetch(`${API_URL}/api/events`);
+        const res = await fetch(`${API_URL}/api/events`, { cache: 'no-store' });
+        if (!res.ok) {
+          console.error("API response error:", res.status);
+          throw new Error(`API error status: ${res.status}`);
+        }
         if (res.ok) {
           const data = await res.json();
           const mappedEvents = data.map((e: any) => {
@@ -46,6 +49,7 @@ export default function EventTracker() {
           setIsLive(true);
         }
       } catch (err) {
+        console.error("Events Fetch Error:", err);
         console.warn("Backend API offline, falling back to local events catalog.");
       }
     }

@@ -8,8 +8,7 @@ import { Search, Bell, Command, Settings, ShieldAlert, ArrowUpRight, TrendingUp,
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { API_URL } from "@/lib/config";
 
 const mockTenderData = [
   { name: "Jan", value: 120 },
@@ -68,9 +67,14 @@ export default function Dashboard() {
     async function loadDashboardData() {
       try {
         const [newsRes, analyticsRes] = await Promise.all([
-          fetch(`${API_URL}/api/news`),
-          fetch(`${API_URL}/api/analytics`)
+          fetch(`${API_URL}/api/news`, { cache: 'no-store' }),
+          fetch(`${API_URL}/api/analytics`, { cache: 'no-store' })
         ]);
+
+        if (!newsRes.ok || !analyticsRes.ok) {
+          console.error(`API response error: news ${newsRes.status}, analytics ${analyticsRes.status}`);
+          throw new Error(`API error statuses - News: ${newsRes.status}, Analytics: ${analyticsRes.status}`);
+        }
 
         if (newsRes.ok && analyticsRes.ok) {
           const newsData = await newsRes.json();
@@ -103,6 +107,7 @@ export default function Dashboard() {
           setIsLive(true);
         }
       } catch (err) {
+        console.error("Dashboard Fetch Error:", err);
         console.warn("Backend API offline, utilizing static local dashboard sets.");
       }
     }
