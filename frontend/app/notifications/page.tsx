@@ -5,7 +5,7 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import { BellRing, Send, MessageSquare, Mail, Check, ShieldAlert, Cpu, Terminal, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 const initialLogs = [
   { time: "20:01:05", type: "SYSTEM", message: "Initial security handshake established with telemetry gateway." },

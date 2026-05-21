@@ -9,7 +9,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ChevronRight, MapPin, Activity, Clock, ShieldAlert, AlertTriangle } from "lucide-react";
 
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export default function EventTracker() {
   const [selectedSector, setSelectedSector] = useState("All");

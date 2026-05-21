@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 const mockTenders = [
   {

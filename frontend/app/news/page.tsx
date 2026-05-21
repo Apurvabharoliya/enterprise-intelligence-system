@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 const mockNews = [
   {
