@@ -1,50 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
-import { CalendarDays } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, ChevronRight, MapPin, Activity, Clock, ShieldAlert, AlertTriangle } from "lucide-react";
 
 const API_URL = "http://localhost:8000";
 
-const mockEvents = [
-  {
-    id: 1,
-    day: 12,
-    title: "FDA Halol Facility Audit Concludes",
-    sector: "Pharma API",
-    sectorColor: "bg-violet-500",
-    desc: "US FDA procedural audit at Sun Pharma Halol facility. Core compliance logging review.",
-    time: "09:00 AM",
-    severity: "High"
-  },
-  {
-    id: 2,
-    day: 18,
-    title: "PNGRB Tariff Hearing Grid Additions",
-    sector: "Gas & LNG",
-    sectorColor: "bg-emerald-500",
-    desc: "Petroleum and Natural Gas Board public hearing regarding terminal tariff revisions.",
-    time: "11:00 AM",
-    severity: "Medium"
-  },
-  {
-    id: 3,
-    day: 24,
-    title: "Gujarat Hydrogen Cracker Bids Open",
-    sector: "EPC & Infra",
-    sectorColor: "bg-amber-500",
-    desc: "Closing date for the major petrochemical hydrogen installation bids in western sectors.",
-    time: "05:00 PM",
-    severity: "High"
-  }
-];
-
 export default function EventTracker() {
   const [selectedSector, setSelectedSector] = useState("All");
-  const [activeEvent, setActiveEvent] = useState<any | null>(mockEvents[0]);
-  const [events, setEvents] = useState<any[]>(mockEvents);
+  const [activeEvent, setActiveEvent] = useState<any | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
   const [isLive, setIsLive] = useState(false);
+  const [view, setView] = useState<"calendar" | "list">("calendar");
 
   useEffect(() => {
     async function fetchEvents() {
@@ -52,22 +24,25 @@ export default function EventTracker() {
         const res = await fetch(`${API_URL}/api/events`);
         if (res.ok) {
           const data = await res.json();
-          const mappedEvents = data.map((e: any, index: number) => ({
-            id: index + 1,
-            day: e.day,
-            title: e.title,
-            sector: e.type === "pharma" ? "Pharma API" : e.type === "gas" ? "Gas & LNG" : "EPC & Infra",
-            sectorColor: e.type === "pharma" ? "bg-violet-500" : e.type === "gas" ? "bg-emerald-500" : "bg-amber-500",
-            desc: e.type === "pharma" 
-              ? "US FDA procedural audit inspection at corporate facility. Core compliance logging review."
-              : e.type === "gas"
-              ? "Petroleum and Natural Gas Board public hearing regarding terminal tariff cap revisions."
-              : "Closing of technical bids evaluation for the major petrochemical cracker installation contract.",
-            time: e.day === 12 ? "09:00 AM" : e.day === 18 ? "11:00 AM" : "05:00 PM",
-            severity: e.severity
-          }));
+          const mappedEvents = data.map((e: any) => {
+            const sectorColors: Record<string, string> = { "pharma": "#8B5CF6", "gas": "#10B981", "epc": "#F59E0B" };
+            const sectorNames: Record<string, string> = { "pharma": "Pharma API", "gas": "Gas & LNG", "epc": "EPC & Infra" };
+            return {
+              id: String(e.id),
+              title: e.title,
+              date: e.date,
+              sector: sectorNames[e.type] || e.type,
+              backgroundColor: sectorColors[e.type] || "#3B82F6",
+              borderColor: sectorColors[e.type] || "#3B82F6",
+              desc: e.desc || `Detailed description for ${e.title} event.`,
+              severity: e.severity,
+              location: e.location || "TBA",
+              status: e.status || "Upcoming",
+            };
+          }).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          
           setEvents(mappedEvents);
-          setActiveEvent(mappedEvents[0]);
+          setActiveEvent(mappedEvents.find((e: any) => e.status === "Upcoming") || mappedEvents[0]);
           setIsLive(true);
         }
       } catch (err) {
@@ -77,166 +52,378 @@ export default function EventTracker() {
     fetchEvents();
   }, []);
 
-  const daysInMonth = 31;
-  const blankSpots = 4; // Friday is 1st
-  const calendarCells = [];
-  
-  for (let i = 1; i <= blankSpots; i++) {
-    calendarCells.push({ day: null, events: [] });
-  }
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dayEvents = events.filter(e => e.day === d);
-    calendarCells.push({ day: d, events: dayEvents });
-  }
-
   const filteredEvents = events.filter((item) => {
     return selectedSector === "All" || item.sector === selectedSector;
   });
 
+  const getCountdown = (dateString: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const eventDate = new Date(dateString);
+    eventDate.setHours(0, 0, 0, 0);
+    const diffTime = eventDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return `${Math.abs(diffDays)} days ago`;
+    if (diffDays === 0) return "Today";
+    return `In ${diffDays} day${diffDays > 1 ? 's' : ''}`;
+  };
+
+  const pastEvents = filteredEvents.filter(e => e.status === "Completed").reverse();
+  const upcomingEvents = filteredEvents.filter(e => e.status === "Upcoming");
+
   return (
-    <div className="flex h-screen bg-background overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#050505] overflow-hidden font-sans text-white">
       <Sidebar />
       
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/40 backdrop-blur-md z-10">
+        <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 bg-black/40 backdrop-blur-md z-10">
           <div className="flex items-center gap-4">
-            <h2 className="text-lg font-bold font-heading tracking-tight flex items-center gap-2">
-              <span className="text-[#E5A93C] font-mono">📅 May 2026 Calendar</span>
+            <h2 className="text-xl font-bold font-heading tracking-tight flex items-center gap-3">
+              <Calendar className="w-5 h-5 text-emerald-400" />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+                Strategic Event Tracker
+              </span>
             </h2>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex rounded-lg bg-black/20 p-1 border border-white/5 font-mono text-xs">
+          <div className="flex items-center gap-6">
+            <div className="flex rounded-lg bg-white/5 p-1 border border-white/5 font-mono text-xs">
               {["All", "Gas & LNG", "EPC & Infra", "Pharma API"].map((sector) => (
                 <button
                   key={sector}
                   onClick={() => setSelectedSector(sector)}
-                  className={`px-3 py-1 rounded transition-colors ${selectedSector === sector ? "bg-white/10 text-white font-bold" : "text-muted-foreground hover:text-white"}`}
+                  className={`px-4 py-1.5 rounded transition-all duration-300 ${selectedSector === sector ? "bg-emerald-500/20 text-emerald-400 font-bold shadow-lg shadow-emerald-500/10" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
                 >
                   {sector}
                 </button>
               ))}
             </div>
+            <div className="h-4 w-px bg-white/10" />
+            <div className="flex bg-white/5 rounded-lg p-1 border border-white/5">
+              <button 
+                onClick={() => setView("calendar")}
+                className={`px-3 py-1.5 text-xs font-mono rounded ${view === "calendar" ? "bg-white/10 text-white" : "text-muted-foreground"}`}
+              >
+                Calendar
+              </button>
+              <button 
+                onClick={() => setView("list")}
+                className={`px-3 py-1.5 text-xs font-mono rounded ${view === "list" ? "bg-white/10 text-white" : "text-muted-foreground"}`}
+              >
+                Timeline
+              </button>
+            </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-6 scroll-smooth">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* Calendar Widget Column */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="p-5 rounded-xl glass border border-white/5 flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="font-heading font-medium text-base text-white">May 2026</h3>
-                  <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5 animate-pulse" : "text-muted-foreground border-white/10"}`}>
-                    {isLive ? "● SECURE FEED ONLINE" : "OFFLINE STATIC CALENDAR"}
-                  </span>
-                </div>
-                
-                {/* Weekday headers */}
-                <div className="grid grid-cols-7 gap-2 text-center text-xs font-mono text-muted-foreground font-semibold mb-2">
-                  <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                </div>
+        <div className="flex-1 overflow-y-auto p-8 scroll-smooth relative">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-[100px] -z-10 pointer-events-none" />
 
-                {/* Calendar Days */}
-                <div className="grid grid-cols-7 gap-2 flex-1">
-                  {calendarCells.map((cell, idx) => (
-                    <div 
-                      key={idx}
-                      className={`min-h-16 md:min-h-20 rounded-lg p-2 flex flex-col justify-between border ${cell.day ? "bg-black/20 border-white/5 hover:border-white/15" : "bg-transparent border-transparent"} transition-colors relative group`}
-                    >
-                      {cell.day && (
-                        <>
-                          <span className="text-xs font-mono text-muted-foreground group-hover:text-white">{cell.day}</span>
-                          <div className="flex flex-col gap-1 mt-1">
-                            {cell.events.map(event => (
-                              <div 
-                                key={event.id}
-                                onClick={() => setActiveEvent(event)}
-                                className={`w-full h-1.5 rounded-full ${event.sectorColor} cursor-pointer opacity-80 hover:opacity-100 transition-opacity`}
-                                title={event.title}
-                              />
-                            ))}
+          <div className="max-w-[1600px] mx-auto grid grid-cols-1 xl:grid-cols-3 gap-8 h-full">
+            
+            {/* Main View Area */}
+            <div className="xl:col-span-2 flex flex-col h-[calc(100vh-8rem)]">
+              <AnimatePresence mode="wait">
+                {view === "calendar" ? (
+                  <motion.div 
+                    key="calendar"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="flex-1 p-6 rounded-2xl bg-black/40 border border-white/5 shadow-2xl calendar-premium backdrop-blur-sm"
+                  >
+                    <FullCalendar
+                      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                      initialView="dayGridMonth"
+                      events={filteredEvents}
+                      height="100%"
+                      headerToolbar={{
+                        left: "prev,next today",
+                        center: "title",
+                        right: "dayGridMonth,timeGridWeek"
+                      }}
+                      eventClick={(info) => {
+                        const ev = events.find(e => e.id === info.event.id);
+                        if (ev) setActiveEvent(ev);
+                      }}
+                      eventContent={(arg) => {
+                        return (
+                          <div className="flex flex-col p-1 overflow-hidden w-full h-full justify-center">
+                             <div className="text-[10px] font-semibold truncate leading-tight">{arg.event.title}</div>
                           </div>
-                        </>
-                      )}
+                        );
+                      }}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    key="list"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                    className="flex-1 flex flex-col gap-8 overflow-y-auto pr-4 custom-scrollbar"
+                  >
+                    <div>
+                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-emerald-400" /> Upcoming Events
+                      </h3>
+                      <div className="space-y-4">
+                        {upcomingEvents.map((event, i) => (
+                          <motion.div 
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            key={event.id}
+                            onClick={() => setActiveEvent(event)}
+                            className={`p-5 rounded-xl border cursor-pointer transition-all duration-300 ${activeEvent?.id === event.id ? "bg-white/10 border-white/20 shadow-lg" : "bg-black/40 border-white/5 hover:border-white/10 hover:bg-white/5"}`}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex gap-3 items-center">
+                                <span className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" style={{ backgroundColor: event.backgroundColor, boxShadow: `0 0 10px ${event.backgroundColor}80` }} />
+                                <h4 className="font-semibold text-base">{event.title}</h4>
+                              </div>
+                              <span className="text-xs font-mono px-2 py-1 bg-white/5 rounded border border-white/5 text-emerald-400 font-bold">{getCountdown(event.date)}</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground ml-6 line-clamp-2">{event.desc}</p>
+                          </motion.div>
+                        ))}
+                        {upcomingEvents.length === 0 && <div className="p-8 text-center text-muted-foreground border border-dashed border-white/10 rounded-xl">No upcoming events found.</div>}
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+
+                    <div>
+                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2 text-muted-foreground">
+                        <Clock className="w-5 h-5" /> Past Events
+                      </h3>
+                      <div className="space-y-4 opacity-70">
+                        {pastEvents.map((event, i) => (
+                          <motion.div 
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            key={event.id}
+                            onClick={() => setActiveEvent(event)}
+                            className={`p-5 rounded-xl border cursor-pointer transition-all duration-300 ${activeEvent?.id === event.id ? "bg-white/10 border-white/20" : "bg-black/20 border-white/5 hover:bg-white/5"}`}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex gap-3 items-center">
+                                <span className="w-3 h-3 rounded-full opacity-50" style={{ backgroundColor: event.backgroundColor }} />
+                                <h4 className="font-semibold text-base line-through decoration-white/20">{event.title}</h4>
+                              </div>
+                              <span className="text-xs font-mono px-2 py-1 text-muted-foreground">{getCountdown(event.date)}</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Event Details Sidebar */}
-            <div className="space-y-6">
-              <div className="p-5 rounded-xl glass border border-white/5 h-full flex flex-col justify-between overflow-hidden relative">
+            {/* Event Details Panel */}
+            <div className="h-[calc(100vh-8rem)]">
+              <div className="h-full rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 p-6 flex flex-col relative overflow-hidden backdrop-blur-md">
+                <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-50" />
                 
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                    <span className="font-mono text-xs text-[#E5A93C] uppercase tracking-wider">// Event Details</span>
-                    <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-                      <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" /> Live Telemetry
+                <div className="flex justify-between items-center mb-8">
+                  <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-emerald-500" /> Event Intelligence
+                  </span>
+                  {isLive && (
+                    <span className="flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
-                  </div>
-
-                  {activeEvent ? (
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center text-xs font-mono">
-                        <span className={`px-2 py-0.5 rounded border ${activeEvent.severity === "High" ? "bg-rose-500/10 text-rose-400 border-rose-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20"}`}>
-                          Priority: {activeEvent.severity}
-                        </span>
-                        <span className="text-muted-foreground">{activeEvent.time}</span>
-                      </div>
-
-                      <h4 className="font-heading text-lg font-bold text-white leading-snug">{activeEvent.title}</h4>
-                      
-                      <div className="flex gap-2">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-[#9CA3AF]">
-                          Date: May {activeEvent.day}, 2026
-                        </span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-[#9CA3AF]">
-                          Sector: {activeEvent.sector}
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-muted-foreground leading-relaxed pt-2">
-                        {activeEvent.desc}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-muted-foreground font-mono text-xs">
-                      Select an event on the calendar to view diagnostic telemetry.
-                    </div>
                   )}
                 </div>
 
-                {/* Upcoming List */}
-                <div className="border-t border-white/5 pt-6 space-y-4">
-                  <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-widest">Chronological Queue</h3>
-                  <div className="space-y-2.5 max-h-[14rem] overflow-y-auto pr-1">
-                    {filteredEvents.map(event => (
-                      <div 
-                        key={event.id}
-                        onClick={() => setActiveEvent(event)}
-                        className={`p-3 rounded-lg border text-xs cursor-pointer hover:border-white/10 transition-colors flex justify-between items-center ${activeEvent?.id === event.id ? "bg-white/5 border-[#E5A93C]/30" : "bg-black/20 border-white/5"}`}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span className={`w-2.5 h-2.5 rounded-full ${event.sectorColor}`} />
-                          <span className="font-medium text-white truncate max-w-[10rem]">{event.title}</span>
+                <AnimatePresence mode="wait">
+                  {activeEvent ? (
+                    <motion.div 
+                      key={activeEvent.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col h-full"
+                    >
+                      <div className="mb-6 space-y-4">
+                        <div className="flex gap-2 flex-wrap">
+                          <span className="px-2.5 py-1 rounded border font-mono text-[10px] uppercase font-bold tracking-wider" style={{ borderColor: activeEvent.backgroundColor + '40', color: activeEvent.backgroundColor, backgroundColor: activeEvent.backgroundColor + '10' }}>
+                            {activeEvent.sector}
+                          </span>
+                          <span className={`px-2.5 py-1 rounded border font-mono text-[10px] uppercase font-bold tracking-wider ${activeEvent.status === 'Completed' ? 'bg-white/5 border-white/10 text-muted-foreground' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
+                            {activeEvent.status}
+                          </span>
+                          {activeEvent.severity === 'High' && (
+                             <span className="px-2.5 py-1 rounded border font-mono text-[10px] uppercase font-bold tracking-wider bg-rose-500/10 border-rose-500/20 text-rose-400 flex items-center gap-1">
+                               <ShieldAlert className="w-3 h-3" /> High Impact
+                             </span>
+                          )}
                         </div>
-                        <span className="font-mono text-muted-foreground text-[10px]">May {event.day}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
 
+                        <h3 className="text-2xl font-heading font-bold text-white leading-tight">
+                          {activeEvent.title}
+                        </h3>
+
+                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5">
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Date</span>
+                            <div className="text-sm font-medium flex items-center gap-2">
+                              <Calendar className="w-4 h-4 text-emerald-500" />
+                              {activeEvent.date}
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Location</span>
+                            <div className="text-sm font-medium flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-amber-500" />
+                              {activeEvent.location}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6">
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Executive Summary</h4>
+                          <p className="text-sm text-white/80 leading-relaxed">
+                            {activeEvent.desc}
+                          </p>
+                        </div>
+                        
+                        <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
+                          <h4 className="text-xs font-mono text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+                            <AlertTriangle className="w-3.5 h-3.5" /> AI Risk Assessment
+                          </h4>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            {activeEvent.status === "Completed" 
+                              ? "Event has concluded. Post-event structural analysis indicates standard market absorption with no critical supply chain disruptions." 
+                              : "Upcoming event requires monitoring. High probability of localized logistics impact and short-term volatility in respective sector indexes."}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 pt-6 border-t border-white/5">
+                        <button className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group">
+                          Generate Detailed Report
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div 
+                      key="empty"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex-1 flex flex-col items-center justify-center text-center space-y-4 opacity-50"
+                    >
+                      <Calendar className="w-12 h-12 text-muted-foreground" />
+                      <p className="text-sm font-mono text-muted-foreground">Select an event from the calendar or timeline to view detailed intelligence.</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
           </div>
         </div>
       </main>
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-premium .fc {
+          --fc-page-bg-color: transparent;
+          --fc-neutral-bg-color: rgba(255, 255, 255, 0.02);
+          --fc-neutral-text-color: #9CA3AF;
+          --fc-border-color: rgba(255, 255, 255, 0.05);
+          
+          --fc-button-text-color: #F3F4F6;
+          --fc-button-bg-color: rgba(255, 255, 255, 0.05);
+          --fc-button-border-color: rgba(255, 255, 255, 0.1);
+          --fc-button-hover-bg-color: rgba(255, 255, 255, 0.1);
+          --fc-button-hover-border-color: rgba(255, 255, 255, 0.2);
+          --fc-button-active-bg-color: rgba(16, 185, 129, 0.2);
+          --fc-button-active-border-color: rgba(16, 185, 129, 0.4);
+          
+          --fc-event-bg-color: transparent;
+          --fc-event-border-color: transparent;
+          --fc-event-text-color: #fff;
+          
+          --fc-today-bg-color: rgba(16, 185, 129, 0.05);
+          font-family: var(--font-sans);
+        }
+        .calendar-premium .fc-theme-standard td, .calendar-premium .fc-theme-standard th {
+          border-color: rgba(255, 255, 255, 0.05);
+        }
+        .calendar-premium .fc-col-header-cell-cushion {
+          color: #9CA3AF;
+          padding: 12px 8px;
+          font-weight: 500;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+        }
+        .calendar-premium .fc-daygrid-day-number {
+          color: #F3F4F6;
+          padding: 8px;
+          font-family: var(--font-mono);
+          font-size: 0.85rem;
+          opacity: 0.7;
+        }
+        .calendar-premium .fc-day-today .fc-daygrid-day-number {
+          color: #10B981;
+          font-weight: bold;
+          opacity: 1;
+        }
+        .calendar-premium .fc .fc-toolbar-title {
+          font-family: var(--font-heading);
+          color: #F3F4F6;
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+        .calendar-premium .fc-h-event {
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 0;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+          cursor: pointer;
+        }
+        .calendar-premium .fc-h-event:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          border-color: rgba(255,255,255,0.3);
+          z-index: 10;
+        }
+        .calendar-premium .fc-daygrid-event-harness {
+          margin-bottom: 4px;
+        }
+        .calendar-premium .fc-view-harness {
+          background: rgba(0,0,0,0.2);
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.02);
+        }
+      `}} />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
-import { Search, Filter, Briefcase, Calendar, MapPin, DollarSign, Download, TrendingUp } from "lucide-react";
+import { Search, Filter, Briefcase, Calendar, MapPin, IndianRupee, Download, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,7 @@ const mockTenders = [
     title: "Gujarat Pipeline Grid Addition Phase 2",
     issuer: "Gujarat Gas Ltd",
     sector: "Gas & LNG",
-    value: "$180M",
+    value: "₹1,500Cr",
     region: "Western Region",
     status: "Under Evaluation",
     deadline: "May 25, 2026",
@@ -26,7 +26,7 @@ const mockTenders = [
     title: "Halol API Biosafety Level-3 Expansion",
     issuer: "Sun Pharmaceutical",
     sector: "Pharma API",
-    value: "$45M",
+    value: "₹375Cr",
     region: "Southern Region",
     status: "Bidding Open",
     deadline: "Jun 12, 2026",
@@ -37,7 +37,7 @@ const mockTenders = [
     title: "National Bullet Train Corridor Engineering JV",
     issuer: "NHSRCL",
     sector: "EPC & Infra",
-    value: "$1.2B",
+    value: "₹10,000Cr",
     region: "Northern Region",
     status: "Contract Awarded",
     deadline: "Concluded",
@@ -48,7 +48,7 @@ const mockTenders = [
     title: "Morbi Compressed Bio-Gas Grid Setup",
     issuer: "Adani Gas",
     sector: "Gas & LNG",
-    value: "$65M",
+    value: "₹540Cr",
     region: "Western Region",
     status: "Bidding Open",
     deadline: "Jun 04, 2026",
@@ -189,10 +189,10 @@ export default function TenderIntel() {
               <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/10 flex flex-col justify-between">
                 <div className="flex items-center justify-between text-xs font-mono text-amber-500">
                   <span>TOTAL ESTIMATED PIPELINE VALUE</span>
-                  <DollarSign className="w-4 h-4" />
+                  <IndianRupee className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-3xl font-bold font-mono text-[#E5A93C]">$1.49B</span>
+                  <span className="text-3xl font-bold font-mono text-[#E5A93C]">₹12,415Cr</span>
                   <p className="text-[10px] text-muted-foreground mt-1 uppercase font-mono">
                     {isLive ? "LIVE DATABASE CONNECTED" : "OFFLINE STATIC VALUE"}
                   </p>

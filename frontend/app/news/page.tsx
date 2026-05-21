@@ -6,7 +6,7 @@ import { Search, Sparkles, Filter, Calendar, AlertCircle, Rss } from "lucide-rea
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
 
 const API_URL = "http://localhost:8000";
 
@@ -16,7 +16,7 @@ const mockNews = [
     title: "Morbi Ceramic Cluster Demands 15% Gas Supply Increase",
     sector: "Gas & LNG",
     sectorColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-    date: "May 20, 2026",
+    date: "May 19, 2026",
     sentiment: "Bullish",
     risk: "Low",
     source: "PNGRB Watcher",
@@ -33,7 +33,7 @@ const mockNews = [
     title: "Sun Pharma Halol API Plant Concludes Clean Audit",
     sector: "Pharma API",
     sectorColor: "text-violet-400 bg-violet-500/10 border-violet-500/20",
-    date: "May 20, 2026",
+    date: "May 18, 2026",
     sentiment: "Bullish",
     risk: "Low",
     source: "FDA Sentinel",
@@ -50,7 +50,7 @@ const mockNews = [
     title: "L&T Emerges as Lowest Bidder for Hydrological Power Unit",
     sector: "EPC & Infra",
     sectorColor: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-    date: "May 20, 2026",
+    date: "May 17, 2026",
     sentiment: "Bullish",
     risk: "Low",
     source: "NHPC Tenders",
@@ -68,7 +68,6 @@ export default function NewsIntel() {
   const [selectedSector, setSelectedSector] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
-  const [alertConfigured, setAlertConfigured] = useState(false);
   const [digest, setDigest] = useState({
     title: "Morbi Ceramic demand grid upgrades; record bidding blocks.",
     summary: "AI aggregated summaries indicate local city gas providers requesting emergency pipeline volume loads. High logistics demands push tariffs while Pharma API audits conclude clean."
@@ -92,17 +91,18 @@ export default function NewsIntel() {
               : art.sector === "Pharma API"
               ? "text-violet-400 bg-violet-500/10 border-violet-500/20"
               : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-            date: "May 20, 2026",
+            date: art.date || "Unknown Date",
             sentiment: art.sentiment,
             risk: "Low",
             source: art.source,
             summary: art.summary,
+            link: art.link,
             bulletPoints: [
               "Real-time audited feed content established via scraping nodes.",
               "Detailed analytical summary generated through secure LLMs.",
               "Historical context mapped directly inside telemetry dashboards."
             ],
-            impact: `Dynamic impact: ${art.summary.slice(0, 50)}...`
+            impact: `Strategic significance verified by continuous intelligence monitors. Sector fundamentals suggest strong correlation with recent developments.`
           }));
           
           setArticles(mappedArticles);
@@ -147,59 +147,6 @@ export default function NewsIntel() {
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            <Dialog>
-              <DialogTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#E5A93C]/10 hover:bg-[#E5A93C]/20 border border-[#E5A93C]/30 text-[#E5A93C] text-xs font-mono font-medium transition-colors cursor-pointer">
-                <Rss className="w-3.5 h-3.5" /> Daily Alerts Setup
-              </DialogTrigger>
-              <DialogContent className="bg-card border-white/10 text-white max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="font-heading text-lg flex items-center gap-2 text-[#E5A93C]">
-                    <Sparkles className="w-5 h-5" /> Config AI Daily Digest Alert
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <p className="text-xs text-muted-foreground">
-                    Get an automated, concise summary of regulatory news, tender wins, and compliance warnings delivered to your channels every morning at 08:00 AM local time.
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-muted-foreground">Notification Channels</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="p-2.5 rounded border border-white/5 bg-black/25 flex flex-col items-center gap-1 cursor-pointer hover:border-primary/40 text-center">
-                        <span className="text-[10px] font-mono text-emerald-400">Telegram Bot</span>
-                        <input type="checkbox" defaultChecked className="mt-1" />
-                      </div>
-                      <div className="p-2.5 rounded border border-white/5 bg-black/25 flex flex-col items-center gap-1 cursor-pointer hover:border-primary/40 text-center">
-                        <span className="text-[10px] font-mono text-emerald-400">WhatsApp API</span>
-                        <input type="checkbox" defaultChecked className="mt-1" />
-                      </div>
-                      <div className="p-2.5 rounded border border-white/5 bg-black/25 flex flex-col items-center gap-1 cursor-pointer hover:border-primary/40 text-center">
-                        <span className="text-[10px] font-mono text-emerald-400">Secure Email</span>
-                        <input type="checkbox" defaultChecked className="mt-1" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-muted-foreground">Intelligence Sectors</label>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-emerald-500/20 text-emerald-400">Gas & LNG</Badge>
-                      <Badge className="bg-amber-500/20 text-amber-400">EPC & Infra</Badge>
-                      <Badge className="bg-violet-500/20 text-violet-400">Pharma API</Badge>
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={() => setAlertConfigured(true)}
-                    className="w-full py-2.5 bg-[#E5A93C] text-black font-semibold rounded text-sm tracking-wide uppercase hover:bg-white transition-colors"
-                  >
-                    {alertConfigured ? "✓ Daily Alerts Subscribed" : "Deploy Subscription"}
-                  </button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
         </header>
 
         {/* Page Content */}
@@ -258,46 +205,53 @@ export default function NewsIntel() {
 
             {/* News Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredNews.map((news) => (
-                <Card 
-                  key={news.id} 
-                  className="glass hover:border-white/10 transition-all duration-300 flex flex-col justify-between group overflow-hidden relative cursor-pointer"
-                  onClick={() => setSelectedArticle(news)}
+              {filteredNews.map((news, idx) => (
+                <div 
+                  key={news.id}
+                  className="relative group perspective"
+                  style={{ perspective: "1000px" }}
                 >
-                  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-[#E5A93C]/20 to-transparent translate-y-1 group-hover:translate-y-0 transition-transform duration-300" />
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/0 via-[#E5A93C]/0 to-violet-500/0 rounded-xl blur opacity-0 group-hover:opacity-30 group-hover:via-[#E5A93C]/20 transition duration-700 pointer-events-none" />
                   
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between text-xs font-mono mb-2">
-                      <span className="text-muted-foreground flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" /> {news.date}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded border ${news.sectorColor} font-bold text-[10px]`}>
-                        {news.sector}
-                      </span>
-                    </div>
-                    <CardTitle className="text-base group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                      {news.title}
-                    </CardTitle>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
-                      {news.summary}
-                    </p>
+                  <Card 
+                    onClick={() => setSelectedArticle(news)}
+                    className="glass relative h-full flex flex-col justify-between border-white/5 hover:border-[#E5A93C]/30 transition-all duration-500 bg-black/40 backdrop-blur-md overflow-hidden transform-gpu group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] cursor-pointer"
+                  >
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-[#E5A93C]/30 to-transparent transition-colors duration-500" />
+                    
+                    <CardHeader className="pb-3 relative z-10">
+                      <div className="flex items-center justify-between text-xs font-mono mb-3">
+                        <span className="text-muted-foreground flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded border border-white/5">
+                          <Calendar className="w-3.5 h-3.5 text-emerald-400" /> {news.date}
+                        </span>
+                        <span className={`px-2.5 py-1 rounded border ${news.sectorColor} font-bold text-[10px] tracking-wider uppercase`}>
+                          {news.sector}
+                        </span>
+                      </div>
+                      <CardTitle className="text-base font-heading text-white/90 group-hover:text-white transition-colors leading-snug">
+                        {news.title}
+                      </CardTitle>
+                    </CardHeader>
+                    
+                    <CardContent className="space-y-5 relative z-10 flex-1 flex flex-col">
+                      <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed flex-1">
+                        {news.summary}
+                      </p>
 
-                    <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-2 border-t border-white/5">
-                      <span className={`px-2 py-0.5 rounded ${news.sentiment === "Bullish" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : news.sentiment === "Bearish" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : "bg-white/5 text-muted-foreground border border-white/10"}`}>
-                        Sentiment: {news.sentiment}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded ${news.risk === "High" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : news.risk === "Medium" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"}`}>
-                        Risk: {news.risk}
-                      </span>
-                      <span className="px-2 py-0.5 rounded bg-white/5 text-muted-foreground border border-white/10 ml-auto">
-                        Source: {news.source}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
+                      <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 border-t border-white/5">
+                        <span className={`px-2 py-1 rounded flex items-center gap-1 ${news.sentiment === "Bullish" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : news.sentiment === "Bearish" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : "bg-white/5 text-muted-foreground border border-white/10"}`}>
+                          <span className="opacity-70">Sentiment:</span> {news.sentiment}
+                        </span>
+                        <span className={`px-2 py-1 rounded flex items-center gap-1 ${news.risk === "High" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : news.risk === "Medium" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"}`}>
+                          <span className="opacity-70">Risk:</span> {news.risk}
+                        </span>
+                        <span className="px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/10 ml-auto flex items-center gap-1">
+                          <span className="opacity-70">Src:</span> <span className="text-white/70">{news.source}</span>
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               ))}
             </div>
 
@@ -367,18 +321,17 @@ export default function NewsIntel() {
                   {selectedArticle.impact}
                 </p>
               </div>
-            </div>
-
-            <div className="border-t border-white/5 pt-6 mt-12 flex gap-4">
-              <button className="flex-1 py-3 bg-white/5 border border-white/10 hover:border-white/20 text-white rounded font-mono text-xs uppercase tracking-widest transition-colors">
-                Share Securely
-              </button>
-              <button 
-                onClick={() => setSelectedArticle(null)}
-                className="flex-1 py-3 bg-[#E5A93C] text-black font-bold rounded font-mono text-xs uppercase tracking-widest hover:bg-white transition-colors"
-              >
-                Done Auditing
-              </button>
+              
+              <div className="pt-6 mt-4 border-t border-white/5">
+                <a 
+                  href={selectedArticle.link || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center py-3 bg-[#E5A93C]/10 hover:bg-[#E5A93C]/20 border border-[#E5A93C]/30 text-[#E5A93C] rounded font-mono text-xs uppercase tracking-widest transition-colors"
+                >
+                  Read Full Article
+                </a>
+              </div>
             </div>
           </div>
         </div>

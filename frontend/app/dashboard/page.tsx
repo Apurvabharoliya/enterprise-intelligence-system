@@ -29,20 +29,22 @@ const mockSectorHeatmap = [
 const mockFeed = [
   {
     id: 1,
-    time: "10 mins ago",
+    time: "May 20, 2026",
     sector: "Gas & LNG",
     title: "GAIL announces new pipeline expansion in Western Grid",
     summary: "Estimated investment at ₹10,000 Cr with tenders opening next month.",
     risk: "Low",
+    link: "#",
     color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/5",
   },
   {
     id: 2,
-    time: "45 mins ago",
+    time: "May 19, 2026",
     sector: "Pharma API",
     title: "FDA approves API facility for Sun Pharma in Gujarat",
     summary: "Successful audit completed. Production to scale by 40% in Q3.",
     risk: "None",
+    link: "#",
     color: "border-violet-500/30 text-violet-400 bg-violet-500/5",
   }
 ];
@@ -53,9 +55,15 @@ export default function Dashboard() {
   const [sectorHeatmap, setSectorHeatmap] = useState<any[]>(mockSectorHeatmap);
   const [tenderData, setTenderData] = useState<any[]>(mockTenderData);
   const [isLive, setIsLive] = useState(false);
+  const [currentDate, setCurrentDate] = useState("");
 
-
-
+  useEffect(() => {
+    setCurrentDate(new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + " IST");
+    const interval = setInterval(() => {
+      setCurrentDate(new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + " IST");
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
   useEffect(() => {
     async function loadDashboardData() {
       try {
@@ -71,10 +79,11 @@ export default function Dashboard() {
           // Map news to dashboard feed items
           const mappedFeed = newsData.articles.map((art: any, index: number) => ({
             id: index + 1,
-            time: index === 0 ? "5 mins ago" : index === 1 ? "25 mins ago" : "1 hour ago",
+            time: art.date,
             sector: art.sector,
             title: art.title,
             summary: art.summary,
+            link: art.link,
             risk: "Low",
             color: art.sector === "Gas & LNG" 
               ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/5"
@@ -131,15 +140,9 @@ export default function Dashboard() {
               </div>
               
               <div className="flex items-center gap-4">
-                <button className="relative p-2 text-muted-foreground hover:text-primary transition-colors rounded-full hover:bg-white/5">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                </button>
                 <div className="w-px h-6 bg-border mx-2" />
-                <div className="flex items-center gap-2 cursor-pointer">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/20 to-violet-500/20 border border-white/10 flex items-center justify-center">
-                    <Settings className="w-4 h-4 text-muted-foreground" />
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-muted-foreground">SYSTEM ONLINE</span>
                 </div>
               </div>
             </header>
@@ -162,7 +165,7 @@ export default function Dashboard() {
                       {isLive ? "● SECURE FEED LIVE" : "OFFLINE FALLBACK"}
                     </span>
                     <span className="px-2 py-1 rounded-md bg-white/5 text-muted-foreground border border-white/10">
-                      UTC +5:30
+                      {currentDate || "UTC +5:30"}
                     </span>
                   </div>
                 </div>
@@ -237,34 +240,37 @@ export default function Dashboard() {
                       
                       <div className="flex-1 overflow-y-auto space-y-4 pr-1">
                         {feed.map((item) => (
-                          <div 
+                          <a 
                             key={item.id} 
-                            className="p-4 rounded-lg bg-black/30 border border-white/5 hover:border-white/10 transition-colors flex flex-col gap-2 relative group"
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-4 rounded-xl bg-black/40 backdrop-blur-md border border-white/5 hover:border-[#E5A93C]/30 hover:bg-black/60 transition-all duration-300 flex flex-col gap-2 relative group transform-gpu hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.5)] cursor-pointer"
                           >
+                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-[#E5A93C]/30 to-transparent transition-colors duration-500" />
                             <div className="flex justify-between items-center text-xs font-mono">
                               <span className="text-muted-foreground">{item.time}</span>
                               <span className={`px-2 py-0.5 rounded border ${item.color}`}>
                                 {item.sector}
                               </span>
                             </div>
-                            <h4 className="font-medium text-sm group-hover:text-primary transition-colors flex items-center gap-1">
+                            <h4 className="font-heading font-medium text-sm text-white/90 group-hover:text-white transition-colors">
                               {item.title}
-                              <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </h4>
-                            <p className="text-xs text-muted-foreground line-clamp-2">
+                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                               {item.summary}
                             </p>
-                            <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/5 text-[11px] font-mono">
-                              <span className="text-muted-foreground flex items-center gap-1">
+                            <div className="flex justify-between items-center mt-2 pt-3 border-t border-white/5 text-[10px] font-mono">
+                              <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
                                 <Info className="w-3 h-3" /> Sentiment: Positive
                               </span>
                               {item.risk !== "None" && (
-                                <span className="text-rose-400 flex items-center gap-1">
+                                <span className="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 flex items-center gap-1">
                                   <ShieldAlert className="w-3 h-3" /> Risk: {item.risk}
                                 </span>
                               )}
                             </div>
-                          </div>
+                          </a>
                         ))}
 
                         <div className="p-4 rounded-lg border border-dashed border-white/10 flex flex-col items-center justify-center text-center text-xs text-muted-foreground">

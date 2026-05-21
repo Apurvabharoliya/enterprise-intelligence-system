@@ -26,11 +26,6 @@ const navItems = [
   { name: "News Intel", href: "/news", icon: Newspaper },
   { name: "Tender Intel", href: "/tenders", icon: Briefcase },
   { name: "Event Tracker", href: "/events", icon: CalendarDays },
-  { name: "Watchlists", href: "/watchlists", icon: Eye },
-  { name: "AI Opportunities", href: "/opportunities", icon: Lightbulb },
-  { name: "Notifications", href: "/notifications", icon: BellRing },
-  { name: "Reports", href: "/reports", icon: FileText },
-  { name: "Analytics", href: "/analytics", icon: LineChart },
 ];
 
 export default function Sidebar() {
@@ -95,28 +90,12 @@ export default function Sidebar() {
 
       <div className="p-4 border-t border-border space-y-2">
         <Link
-          href="/settings"
-          className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-primary hover:bg-white/5 transition-colors"
-        >
-          <Settings className="w-5 h-5" />
-          Settings
-        </Link>
-        <Link
           href="/"
           className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-semibold text-rose-400 hover:text-white hover:bg-rose-500/10 border border-rose-500/20 transition-colors"
         >
           <Home className="w-5 h-5 text-rose-400 group-hover:text-white" />
           Exit Command Center
         </Link>
-        <div className="mt-4 px-3 flex items-center gap-3 pt-2">
-          <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/50 flex items-center justify-center">
-            <span className="text-xs font-bold font-mono">JS</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium leading-none">John Smith</span>
-            <span className="text-xs text-muted-foreground mt-1">Lead Analyst</span>
-          </div>
-        </div>
       </div>
     </aside>
     </>
