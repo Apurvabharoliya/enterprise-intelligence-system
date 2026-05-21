@@ -21,12 +21,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "News Intel", href: "/news", icon: Newspaper },
-  { name: "Tender Intel", href: "/tenders", icon: Briefcase },
-  { name: "Event Tracker", href: "/events", icon: CalendarDays },
-];
+  const navItems = [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "News Intel", href: "/news", icon: Newspaper },
+    { name: "Tender Intel", href: "/tenders", icon: Briefcase },
+    { name: "Event Tracker", href: "/events", icon: CalendarDays },
+  ];
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -49,7 +49,7 @@ export default function Sidebar() {
       )}
 
       <aside className={cn(
-        "w-64 flex flex-col border-r border-border bg-[#0A0D10]/95 backdrop-blur-xl h-full z-[50]",
+        "w-full sm:w-64 flex flex-col border-r border-border bg-[#0A0D10]/95 backdrop-blur-xl h-full z-[50]",
         "fixed lg:static top-0 left-0 transition-transform duration-300",
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
