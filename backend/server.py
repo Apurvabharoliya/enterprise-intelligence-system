@@ -126,8 +126,26 @@ async def health_check():
         }
     }
 
-# 1. News Feed & AI Daily Digest Endpoint
-NEWS_CACHE = {"data": None, "last_fetched": None, "is_fetching": False}
+INITIAL_NEWS = {
+    "digest": {
+        "title": "System Initializing...",
+        "summary": "Fetching latest live intelligence from secure RSS feeds. Standby for real-time data sync."
+    },
+    "articles": [
+        {
+            "id": "init-news-1",
+            "title": "Establishing Secure Telemetry Links to Feed Providers...",
+            "sector": "General",
+            "sentiment": "Neutral",
+            "summary": "System is currently pulling latest intelligence dossiers. This temporary data will be replaced automatically.",
+            "source": "IntelliSector Core",
+            "time": "Just now",
+            "date": datetime.datetime.now().strftime('%b %d, %Y'),
+            "link": "#"
+        }
+    ]
+}
+NEWS_CACHE = {"data": INITIAL_NEWS, "last_fetched": datetime.datetime.now() - datetime.timedelta(minutes=10), "is_fetching": False}
 
 async def update_news_cache_task():
     global NEWS_CACHE
@@ -217,7 +235,18 @@ async def get_news_feed(background_tasks: BackgroundTasks):
     return NEWS_CACHE["data"]
 
 # 2. Bidding & Tenders Endpoint
-TENDERS_CACHE = {"data": None, "last_fetched": None, "is_fetching": False}
+INITIAL_TENDERS = [
+    {
+        "id": "TEN-INIT",
+        "title": "Synchronizing Live Tenders Database...",
+        "sector": "EPC & Infra",
+        "region": "All Regions",
+        "value": "₹0 Cr",
+        "status": "Under Evaluation",
+        "deadline": datetime.datetime.now().strftime('%b %d, %Y')
+    }
+]
+TENDERS_CACHE = {"data": INITIAL_TENDERS, "last_fetched": datetime.datetime.now() - datetime.timedelta(minutes=10), "is_fetching": False}
 
 async def update_tenders_cache_task():
     global TENDERS_CACHE
@@ -307,7 +336,20 @@ async def get_tenders(background_tasks: BackgroundTasks):
     return TENDERS_CACHE["data"]
 
 # 3. Events Timeline Endpoint
-EVENTS_CACHE = {"data": None, "last_fetched": None, "is_fetching": False}
+INITIAL_EVENTS = [
+    {
+        "id": "evt-init",
+        "day": datetime.datetime.now().day,
+        "title": "System Synchronization in Progress...",
+        "type": "general",
+        "severity": "Medium",
+        "date": datetime.datetime.now().strftime('%Y-%m-%d'),
+        "desc": "Fetching global event timeline from remote sources. Display will update automatically.",
+        "location": "Global",
+        "status": "Upcoming"
+    }
+]
+EVENTS_CACHE = {"data": INITIAL_EVENTS, "last_fetched": datetime.datetime.now() - datetime.timedelta(minutes=10), "is_fetching": False}
 
 async def update_events_cache_task():
     global EVENTS_CACHE

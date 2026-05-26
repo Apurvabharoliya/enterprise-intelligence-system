@@ -83,6 +83,13 @@ export default function Dashboard() {
     
     loadAnalytics();
     loadNews();
+
+    const intervalId = setInterval(() => {
+      loadAnalytics();
+      loadNews();
+    }, 15000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (

@@ -47,6 +47,12 @@ export default function TenderIntel() {
       }
     }
     fetchTenders();
+
+    const intervalId = setInterval(() => {
+      fetchTenders();
+    }, 15000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleSort = (key: string) => {

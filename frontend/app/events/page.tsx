@@ -54,6 +54,12 @@ export default function EventTracker() {
       }
     }
     fetchEvents();
+
+    const intervalId = setInterval(() => {
+      fetchEvents();
+    }, 15000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const filteredEvents = events.filter((item) => {

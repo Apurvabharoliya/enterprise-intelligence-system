@@ -70,6 +70,12 @@ export default function NewsIntel() {
       }
     }
     fetchNews();
+
+    const intervalId = setInterval(() => {
+      fetchNews();
+    }, 15000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const filteredNews = articles.filter((item) => {
