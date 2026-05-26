@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { API_URL } from "@/lib/config";
+import { generateTenderDossierPDF } from "@/lib/generatePDF";
 
 export default function TenderIntel() {
   const [selectedSector, setSelectedSector] = useState("All");
@@ -14,6 +15,8 @@ export default function TenderIntel() {
   const [exportSuccess, setExportSuccess] = useState(false);
   const [tenders, setTenders] = useState<any[]>([]);
   const [isLive, setIsLive] = useState(false);
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+  const [selectedTender, setSelectedTender] = useState<any | null>(null);
 
   useEffect(() => {
     async function fetchTenders() {
@@ -46,6 +49,14 @@ export default function TenderIntel() {
     fetchTenders();
   }, []);
 
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
   const filteredTenders = tenders.filter((item) => {
     const matchesSector = selectedSector === "All" || item.sector === selectedSector;
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -54,11 +65,40 @@ export default function TenderIntel() {
     return matchesSector && matchesSearch;
   });
 
+  const sortedTenders = [...filteredTenders].sort((a, b) => {
+    if (!sortConfig) return 0;
+    
+    // Custom sort for value
+    if (sortConfig.key === 'value') {
+      const valA = parseFloat(a.value.replace(/[^\\d.]/g, '')) || 0;
+      const valB = parseFloat(b.value.replace(/[^\\d.]/g, '')) || 0;
+      return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
+    }
+    
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+
+  const totalValue = filteredTenders.reduce((sum, tender) => {
+    const match = tender.value.match(/([\\d\\.,]+)/);
+    if (match) {
+      const num = parseFloat(match[1].replace(/,/g, ''));
+      if (!isNaN(num)) return sum + num;
+    }
+    return sum;
+  }, 0);
+  const formattedTotal = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(totalValue);
+
   const handleExportCSV = () => {
-    const headers = "Tender ID,Title,Issuer,Sector,Value,Region,Status,Deadline,Match Score\n";
-    const rows = filteredTenders.map(t => 
+    const headers = "Tender ID,Title,Issuer,Sector,Value,Region,Status,Deadline,Match Score\\n";
+    const rows = sortedTenders.map(t => 
       `"${t.id}","${t.title}","${t.issuer}","${t.sector}","${t.value}","${t.region}","${t.status}","${t.deadline}","${t.matchScore}"`
-    ).join("\n");
+    ).join("\\n");
     
     const blob = new Blob([headers + rows], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
@@ -138,7 +178,7 @@ export default function TenderIntel() {
                   <TrendingUp className="w-4 h-4 text-[#E5A93C]" /> AI Match Recommendation
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Based on your watchlisted firms L&T and GAIL, the <span className="text-white font-semibold">TEN-9082 API unit</span> has a high strategic affinity (88% Match Score) for sub-contracting logistics, and <span className="text-white font-semibold">TEN-9081 Gujarat Gas Zone B</span> matches GAIL's regional grid pipeline layout.
+                  Based on your watchlisted firms, the <span className="text-white font-semibold">{filteredTenders.length > 0 ? filteredTenders[0].id : "TEN-9082"} API unit</span> has a high strategic affinity for sub-contracting logistics, and matches your regional footprint layout perfectly. Recommend immediate due diligence.
                 </p>
               </div>
 
@@ -148,9 +188,9 @@ export default function TenderIntel() {
                   <IndianRupee className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-3xl font-bold font-mono text-[#E5A93C]">₹12,415Cr</span>
+                  <span className="text-3xl font-bold font-mono text-[#E5A93C]">₹{formattedTotal}Cr</span>
                   <p className="text-[10px] text-muted-foreground mt-1 uppercase font-mono">
-                    {isLive ? "LIVE DATABASE CONNECTED" : "OFFLINE STATIC VALUE"}
+                    {isLive ? "LIVE DATABASE CONNECTED" : "CALCULATING..."}
                   </p>
                 </div>
               </div>
@@ -161,19 +201,23 @@ export default function TenderIntel() {
               <Table>
                 <TableHeader className="bg-black/20">
                   <TableRow className="border-b border-white/5">
-                    <TableHead className="font-mono text-xs text-muted-foreground">Tender ID</TableHead>
-                    <TableHead className="font-mono text-xs text-muted-foreground">Tender Description</TableHead>
-                    <TableHead className="font-mono text-xs text-muted-foreground">Issuer / Agent</TableHead>
-                    <TableHead className="font-mono text-xs text-muted-foreground">Est. Value</TableHead>
-                    <TableHead className="font-mono text-xs text-muted-foreground">Region</TableHead>
-                    <TableHead className="font-mono text-xs text-muted-foreground">Status</TableHead>
-                    <TableHead className="font-mono text-xs text-muted-foreground">Deadline</TableHead>
-                    <TableHead className="font-mono text-xs text-muted-foreground text-right">Match</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-white" onClick={() => handleSort('id')}>Tender ID</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-white" onClick={() => handleSort('title')}>Tender Description</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-white" onClick={() => handleSort('issuer')}>Issuer / Agent</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-white" onClick={() => handleSort('value')}>Est. Value</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-white" onClick={() => handleSort('region')}>Region</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-white" onClick={() => handleSort('status')}>Status</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-white" onClick={() => handleSort('deadline')}>Deadline</TableHead>
+                    <TableHead className="font-mono text-xs text-muted-foreground text-right cursor-pointer hover:text-white" onClick={() => handleSort('matchScore')}>Match</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTenders.map((tender) => (
-                    <TableRow key={tender.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  {sortedTenders.map((tender) => (
+                    <TableRow 
+                      key={tender.id} 
+                      className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
+                      onClick={() => setSelectedTender(tender)}
+                    >
                       <TableCell className="font-mono text-xs font-semibold text-primary">{tender.id}</TableCell>
                       <TableCell className="max-w-xs">
                         <div className="flex flex-col gap-1">
@@ -204,7 +248,7 @@ export default function TenderIntel() {
                     </TableRow>
                   ))}
 
-                  {filteredTenders.length === 0 && (
+                  {sortedTenders.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-12 text-muted-foreground font-mono text-xs">
                         No active tenders match the search criteria.
@@ -218,6 +262,69 @@ export default function TenderIntel() {
           </div>
         </div>
       </main>
+
+      {/* Tender Detail Panel */}
+      {selectedTender && (
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-2xl h-full bg-[#111827] border-l border-white/10 p-8 overflow-y-auto flex flex-col justify-between shadow-2xl animate-in slide-in-from-right duration-300">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="text-[#E5A93C] border-[#E5A93C]/30 bg-[#E5A93C]/10 font-mono text-xs">
+                  {selectedTender.sector}
+                </Badge>
+                <button 
+                  onClick={() => setSelectedTender(null)}
+                  className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-muted-foreground hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold font-heading text-white">{selectedTender.title}</h2>
+                <div className="flex flex-wrap gap-4 text-xs font-mono text-muted-foreground border-y border-white/5 py-4">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-emerald-400" />
+                    <span className="text-white/80">{selectedTender.id}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-emerald-400" />
+                    <span>Deadline: <span className="text-white/80">{selectedTender.deadline}</span></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <IndianRupee className="w-4 h-4 text-emerald-400" />
+                    <span className="text-white/80 font-bold">{selectedTender.value}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-sm font-mono text-muted-foreground uppercase tracking-widest">Tender Overview</h3>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  This tender is issued by {selectedTender.issuer} for operations in the {selectedTender.region}. The current status of this tender is marked as {selectedTender.status}.
+                </p>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  Our strategic AI analysis engine gives your firm a <strong>{selectedTender.matchScore}</strong> match score for this opportunity, indicating high alignment with your recent operational capabilities and geographic footprint.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 flex gap-4">
+              <button 
+                className="flex-1 py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-semibold transition-all duration-300"
+              >
+                Initiate Bid Protocol
+              </button>
+              <button 
+                onClick={() => generateTenderDossierPDF(selectedTender)}
+                className="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-sm font-semibold transition-all duration-300"
+              >
+                Download Dossier (PDF)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

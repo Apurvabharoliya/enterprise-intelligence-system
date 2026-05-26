@@ -9,6 +9,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ChevronRight, MapPin, Activity, Clock, ShieldAlert, AlertTriangle } from "lucide-react";
 import { API_URL } from "@/lib/config";
+import { generateEventReportPDF } from "@/lib/generatePDF";
 
 export default function EventTracker() {
   const [selectedSector, setSelectedSector] = useState("All");
@@ -373,21 +374,10 @@ export default function EventTracker() {
 
                       <div className="mt-6 pt-6 border-t border-white/5">
                         <button 
-                          onClick={() => {
-                            const reportContent = `INTELLI-SECTOR EXECUTIVE EVENT REPORT\n=====================================\nGenerated: ${new Date().toLocaleString()}\n\nEVENT DETAILS\n-------------\nTitle: ${activeEvent.title}\nDate: ${activeEvent.date}\nSector: ${activeEvent.sector}\nLocation: ${activeEvent.location}\nStatus: ${activeEvent.status}\nSeverity: ${activeEvent.severity}\n\nEXECUTIVE SUMMARY\n-----------------\n${activeEvent.desc}\n\nAI RISK ASSESSMENT\n------------------\n${activeEvent.status === "Completed" ? "Event has concluded. Post-event structural analysis indicates standard market absorption with no critical supply chain disruptions." : "Upcoming event requires monitoring. High probability of localized logistics impact and short-term volatility in respective sector indexes."}\n\n---\nEND OF REPORT`;
-                            const blob = new Blob([reportContent], { type: "text/plain" });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement("a");
-                            a.href = url;
-                            a.download = `Event_Report_${activeEvent.title.replace(/\\s+/g, '_').substring(0, 20)}.txt`;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            URL.revokeObjectURL(url);
-                          }}
+                          onClick={() => generateEventReportPDF(activeEvent)}
                           className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
                         >
-                          Generate Detailed Report
+                          Generate Detailed Report (PDF)
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </button>
                       </div>
