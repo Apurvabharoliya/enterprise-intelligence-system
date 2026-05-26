@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException, Body, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -127,80 +127,92 @@ async def health_check():
     }
 
 # 1. News Feed & AI Daily Digest Endpoint
-NEWS_CACHE = {"data": None, "last_fetched": None}
+NEWS_CACHE = {"data": None, "last_fetched": None, "is_fetching": False}
+
+async def update_news_cache_task():
+    global NEWS_CACHE
+    if NEWS_CACHE.get("is_fetching"):
+        return
+    NEWS_CACHE["is_fetching"] = True
+    try:
+        def fetch_live_news(query, sector):
+            encoded_query = urllib.parse.quote(query)
+            url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-IN&gl=IN&ceid=IN:en"
+            feed = feedparser.parse(url)
+            articles = []
+            for entry in feed.entries:
+                title_parts = entry.title.rsplit(" - ", 1)
+                title = title_parts[0]
+                source = title_parts[1] if len(title_parts) > 1 else "News Feed"
+                # Simple keyword matching for sentiment
+                text = (title + getattr(entry, "summary", "")).lower()
+                sentiment = "Bullish" if any(w in text for w in ["up", "growth", "win", "high", "positive"]) else "Bearish" if any(w in text for w in ["down", "drop", "loss", "low", "negative"]) else "Neutral"
+                date_str = datetime.datetime.now().strftime('%b %d, %Y')
+                if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                    date_str = time.strftime('%b %d, %Y', entry.published_parsed)
+                elif hasattr(entry, 'published'):
+                    date_str = entry.published
+
+                import re
+                raw_summary = getattr(entry, "summary", "No summary available")
+                clean_summary = re.sub(r'<[^>]+>', '', raw_summary)
+                if not clean_summary.strip():
+                    clean_summary = title
+                    
+                articles.append({
+                    "id": entry.id if hasattr(entry, 'id') else entry.link,
+                    "title": title,
+                    "sector": sector,
+                    "sentiment": sentiment,
+                    "summary": clean_summary[:200] + "...",
+                    "source": source,
+                    "time": "Just now",
+                    "date": date_str,
+                    "link": getattr(entry, "link", "#")
+                })
+            return articles
+
+        import asyncio
+        try:
+            gas_task = asyncio.to_thread(fetch_live_news, "Gas LNG India", "Gas & LNG")
+            pharma_task = asyncio.to_thread(fetch_live_news, "Pharma API India", "Pharma API")
+            epc_task = asyncio.to_thread(fetch_live_news, "EPC Infrastructure India", "EPC & Infra")
+            results = await asyncio.gather(gas_task, pharma_task, epc_task)
+            gas_news, pharma_news, epc_news = results
+        except AttributeError:
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                gas_news = pool.submit(fetch_live_news, "Gas LNG India", "Gas & LNG").result()
+                pharma_news = pool.submit(fetch_live_news, "Pharma API India", "Pharma API").result()
+                epc_news = pool.submit(fetch_live_news, "EPC Infrastructure India", "EPC & Infra").result()
+
+        all_articles = gas_news + pharma_news + epc_news
+        random.shuffle(all_articles)
+
+        NEWS_CACHE["data"] = {
+            "digest": {
+                "title": "Industrial Intelligence Digest",
+                "summary": "AI Summaries show port freight rates declining by 8% next week. Watch out for FDA compliance checks scheduled across Gujarat API synthesis clusters on May 24. Heavy structural JVs in EPC are currently trending bullish."
+            },
+            "articles": all_articles
+        }
+        NEWS_CACHE["last_fetched"] = datetime.datetime.now()
+    finally:
+        NEWS_CACHE["is_fetching"] = False
 
 @app.get("/api/news")
-async def get_news_feed():
+async def get_news_feed(background_tasks: BackgroundTasks):
     global NEWS_CACHE
-    import asyncio
-    
     now = datetime.datetime.now()
-    if NEWS_CACHE["data"] and NEWS_CACHE["last_fetched"] and (now - NEWS_CACHE["last_fetched"]).total_seconds() < 300:
+    
+    # Stale-while-revalidate logic
+    if NEWS_CACHE["data"] and NEWS_CACHE["last_fetched"]:
+        if (now - NEWS_CACHE["last_fetched"]).total_seconds() > 60:
+            background_tasks.add_task(update_news_cache_task)
         return NEWS_CACHE["data"]
 
-    def fetch_live_news(query, sector):
-        encoded_query = urllib.parse.quote(query)
-        url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-IN&gl=IN&ceid=IN:en"
-        feed = feedparser.parse(url)
-        articles = []
-        for entry in feed.entries[:4]:
-            title_parts = entry.title.rsplit(" - ", 1)
-            title = title_parts[0]
-            source = title_parts[1] if len(title_parts) > 1 else "News Feed"
-            # Simple keyword matching for sentiment
-            text = (title + getattr(entry, "summary", "")).lower()
-            sentiment = "Bullish" if any(w in text for w in ["up", "growth", "win", "high", "positive"]) else "Bearish" if any(w in text for w in ["down", "drop", "loss", "low", "negative"]) else "Neutral"
-            date_str = datetime.datetime.now().strftime('%b %d, %Y')
-            if hasattr(entry, 'published_parsed') and entry.published_parsed:
-                date_str = time.strftime('%b %d, %Y', entry.published_parsed)
-            elif hasattr(entry, 'published'):
-                date_str = entry.published
-
-            import re
-            raw_summary = getattr(entry, "summary", "No summary available")
-            clean_summary = re.sub(r'<[^>]+>', '', raw_summary)
-            if not clean_summary.strip():
-                clean_summary = title
-                
-            articles.append({
-                "id": entry.id if hasattr(entry, 'id') else entry.link,
-                "title": title,
-                "sector": sector,
-                "sentiment": sentiment,
-                "summary": clean_summary[:200] + "...",
-                "source": source,
-                "time": "Just now",
-                "date": date_str,
-                "link": getattr(entry, "link", "#")
-            })
-        return articles
-
-    try:
-        gas_task = asyncio.to_thread(fetch_live_news, "Gas LNG India", "Gas & LNG")
-        pharma_task = asyncio.to_thread(fetch_live_news, "Pharma API India", "Pharma API")
-        epc_task = asyncio.to_thread(fetch_live_news, "EPC Infrastructure India", "EPC & Infra")
-        results = await asyncio.gather(gas_task, pharma_task, epc_task)
-        gas_news, pharma_news, epc_news = results
-    except AttributeError:
-        # Fallback for Python < 3.9
-        import concurrent.futures
-        with concurrent.futures.ThreadPoolExecutor() as pool:
-            gas_news = pool.submit(fetch_live_news, "Gas LNG India", "Gas & LNG").result()
-            pharma_news = pool.submit(fetch_live_news, "Pharma API India", "Pharma API").result()
-            epc_news = pool.submit(fetch_live_news, "EPC Infrastructure India", "EPC & Infra").result()
-
-    all_articles = gas_news + pharma_news + epc_news
-    random.shuffle(all_articles)
-
-    NEWS_CACHE["data"] = {
-        "digest": {
-            "title": "Industrial Intelligence Digest",
-            "summary": "AI Summaries show port freight rates declining by 8% next week. Watch out for FDA compliance checks scheduled across Gujarat API synthesis clusters on May 24. Heavy structural JVs in EPC are currently trending bullish."
-        },
-        "articles": all_articles[:10]
-    }
-    NEWS_CACHE["last_fetched"] = now
-
+    # First fetch blocks until ready
+    await update_news_cache_task()
     return NEWS_CACHE["data"]
 
 # 2. Bidding & Tenders Endpoint

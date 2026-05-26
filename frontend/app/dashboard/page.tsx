@@ -26,23 +26,36 @@ export default function Dashboard() {
   }, []);
   
   useEffect(() => {
-    async function loadDashboardData() {
+    async function loadAnalytics() {
       try {
-        const [newsRes, analyticsRes] = await Promise.all([
-          fetch(`${API_URL}/api/news`, { cache: 'no-store' }),
-          fetch(`${API_URL}/api/analytics`, { cache: 'no-store' })
-        ]);
-
-        if (!newsRes.ok || !analyticsRes.ok) {
-          console.error(`API response error: news ${newsRes.status}, analytics ${analyticsRes.status}`);
-          throw new Error(`API error statuses - News: ${newsRes.status}, Analytics: ${analyticsRes.status}`);
-        }
-
-        if (newsRes.ok && analyticsRes.ok) {
-          const newsData = await newsRes.json();
+        const analyticsRes = await fetch(`${API_URL}/api/analytics`, { cache: 'no-store' });
+        if (analyticsRes.ok) {
           const analyticsData = await analyticsRes.json();
+          const mappedTenders = analyticsData.monthly.map((m: any) => ({
+            name: m.name,
+            value: m.epc
+          }));
+          setTenderData(mappedTenders);
 
-          // Map news to dashboard feed items
+          if (analyticsData.monthly.length > 0) {
+            const lastMonth = analyticsData.monthly[analyticsData.monthly.length - 1];
+            setSectorHeatmap([
+              { name: "Gas Distribution", value: lastMonth.gas, color: "#10B981" },
+              { name: "EPC & Infra", value: lastMonth.epc, color: "#F59E0B" },
+              { name: "Pharma API", value: lastMonth.pharma, color: "#8B5CF6" }
+            ]);
+          }
+        }
+      } catch (err) {
+        console.error("Dashboard Analytics Fetch Error:", err);
+      }
+    }
+
+    async function loadNews() {
+      try {
+        const newsRes = await fetch(`${API_URL}/api/news`, { cache: 'no-store' });
+        if (newsRes.ok) {
+          const newsData = await newsRes.json();
           const mappedFeed = newsData.articles.map((art: any, index: number) => ({
             id: index + 1,
             time: art.date,
@@ -58,32 +71,17 @@ export default function Dashboard() {
               : "border-amber-500/30 text-amber-400 bg-amber-500/5"
           }));
           setFeed(mappedFeed);
-
-          // Map monthly aggregates into line graph values
-          const mappedTenders = analyticsData.monthly.map((m: any) => ({
-            name: m.name,
-            value: m.epc
-          }));
-          setTenderData(mappedTenders);
-
-          if (analyticsData.monthly.length > 0) {
-            const lastMonth = analyticsData.monthly[analyticsData.monthly.length - 1];
-            setSectorHeatmap([
-              { name: "Gas Distribution", value: lastMonth.gas, color: "#10B981" },
-              { name: "EPC & Infra", value: lastMonth.epc, color: "#F59E0B" },
-              { name: "Pharma API", value: lastMonth.pharma, color: "#8B5CF6" }
-            ]);
-          }
-
           setIsLive(true);
         }
       } catch (err) {
-        console.error("Dashboard Fetch Error:", err);
+        console.error("Dashboard News Fetch Error:", err);
       } finally {
         setLoading(false);
       }
     }
-    loadDashboardData();
+    
+    loadAnalytics();
+    loadNews();
   }, []);
 
   return (
