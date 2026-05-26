@@ -85,11 +85,8 @@ export default function TenderIntel() {
   });
 
   const totalValue = filteredTenders.reduce((sum, tender) => {
-    const match = tender.value.match(/([\\d\\.,]+)/);
-    if (match) {
-      const num = parseFloat(match[1].replace(/,/g, ''));
-      if (!isNaN(num)) return sum + num;
-    }
+    const num = parseFloat(tender.value.replace(/[^\\d.]/g, ''));
+    if (!isNaN(num)) return sum + num;
     return sum;
   }, 0);
   const formattedTotal = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(totalValue);
@@ -218,9 +215,9 @@ export default function TenderIntel() {
                       onClick={() => setSelectedTender(tender)}
                     >
                       <TableCell className="font-mono text-xs font-semibold text-primary">{tender.id}</TableCell>
-                      <TableCell className="max-w-xs">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-medium leading-snug">{tender.title}</span>
+                      <TableCell className="max-w-[250px]">
+                        <div className="flex flex-col gap-1 overflow-hidden pr-4">
+                          <span className="text-sm font-medium leading-snug truncate block">{tender.title}</span>
                           <span className="text-[10px] self-start px-2 py-0.5 rounded border font-bold font-mono text-[9px] scale-95 origin-left tracking-wide uppercase mt-1 leading-none shadow-sm shadow-black/10 select-none cursor-default bg-black/20 block border-white/5">
                             {tender.sector}
                           </span>

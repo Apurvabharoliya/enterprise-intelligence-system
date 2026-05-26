@@ -174,7 +174,7 @@ export default function EventTracker() {
                     className="flex-1 flex flex-col gap-8 overflow-y-auto pr-4 custom-scrollbar"
                   >
                     {/* AI Summary Banner */}
-                    <div className="rounded-xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-white/5 p-5 relative overflow-hidden group mb-2">
+                    <div className="rounded-xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-white/5 p-5 relative overflow-hidden group mb-2 shrink-0">
                       <div className="absolute top-0 right-0 w-96 h-full bg-[#E5A93C]/5 blur-3xl -z-10" />
                       <div className="flex items-start gap-4">
                         <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 flex-shrink-0 animate-pulse">
@@ -197,11 +197,11 @@ export default function EventTracker() {
                       </div>
                     </div>
 
-                    <div>
+                    <div className="shrink-0">
                       <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2">
                         <Activity className="w-5 h-5 text-emerald-400" /> Upcoming Events
                       </h3>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {upcomingEvents.map((event, i) => (
                           <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
@@ -255,7 +255,7 @@ export default function EventTracker() {
                       )}
                     </div>
 
-                    <div className="mt-4">
+                    <div className="mt-4 shrink-0 pb-6">
                       <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2 text-muted-foreground">
                         <Clock className="w-5 h-5" /> Past Events
                       </h3>
@@ -275,7 +275,7 @@ export default function EventTracker() {
                                   {getCountdown(event.date)}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-heading text-white/50 line-through decoration-white/20">
+                              <h4 className="text-sm font-heading text-white/50 line-through decoration-white/20 line-clamp-2">
                                 {event.title}
                               </h4>
                             </div>
