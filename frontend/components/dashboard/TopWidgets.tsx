@@ -69,18 +69,18 @@ export default function TopWidgets() {
       {stats.map((stat, index) => (
         <motion.div key={stat.title} variants={itemVariants}>
           <Card className="glass overflow-hidden relative group border-white/5 hover:border-white/10 transition-colors">
-            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-bl-full -z-10 transition-transform group-hover:scale-110 ${stat.bg}`} />
+            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-xl-bl-full -z-10 transition-transform group-hover:scale-110 ${stat.bg}`} />
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground font-sans">
+              <CardTitle className="text-sm font-medium text-[#64748B] font-sans">
                 {stat.title}
               </CardTitle>
-              <div className={`p-2 rounded-md ${stat.bg}`}>
+              <div className={`p-2 rounded-xl-md ${stat.bg}`}>
                 <stat.icon className={`w-4 h-4 ${stat.color}`} />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold font-mono tracking-tight">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1 font-mono">
+              <p className="text-xs text-[#64748B] mt-1 flex items-center gap-1 font-mono">
                 <span className={stat.trend === "up" ? "text-emerald-500" : "text-rose-500"}>
                   {stat.change}
                 </span>

@@ -146,8 +146,8 @@
 
 /* Utilities */
 .glass {
-  @apply bg-card/60 backdrop-blur-md border border-white/5 shadow-xl;
+  @apply bg-white/70 backdrop-blur-xl border border-[#E2E8F0] shadow-lg shadow-[#0F172A]/5;
 }
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#0F172A] to-[#64748B];
 }

@@ -71,12 +71,16 @@ export default function NewsIntel() {
     }
     fetchNews();
 
-    const intervalId = setInterval(() => {
-      fetchNews();
-    }, 15000);
-
+    let intervalId: any;
+    const startPolling = (isLiveState: boolean) => {
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(() => {
+        fetchNews();
+      }, isLiveState ? 15000 : 2000);
+    };
+    startPolling(isLive);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [isLive]);
 
   const filteredNews = articles.filter((item) => {
     const matchesSector = selectedSector === "All" || item.sector === selectedSector;
@@ -97,15 +101,15 @@ export default function NewsIntel() {
       
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/40 backdrop-blur-md z-10">
+        <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/40  z-10">
           <div className="flex items-center gap-4 w-full max-w-md">
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
               <Input 
                 placeholder="Search articles, entities, regulations..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-gray-100 border-gray-200 focus-visible:ring-primary/50 h-9 font-mono text-sm"
+                className="pl-9 bg-[#F1F5F9] border-[#E2E8F0] focus-visible:ring-primary/50 h-9 font-mono text-sm"
               />
             </div>
           </div>
@@ -122,19 +126,19 @@ export default function NewsIntel() {
                 <h2 className="text-2xl font-bold font-heading tracking-tight flex items-center gap-2">
                   <Rss className="w-6 h-6 text-primary" /> Sector News Intelligence
                 </h2>
-                <p className="text-sm text-muted-foreground mt-1">AI-extracted industry signals, regulatory audits, and structural updates.</p>
+                <p className="text-sm text-[#64748B] mt-1">AI-extracted industry signals, regulatory audits, and structural updates.</p>
               </div>
 
               {/* Filters */}
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-muted-foreground" />
-                  <div className="flex rounded-lg bg-gray-100 p-1 border border-gray-200 font-mono text-xs">
+                  <Filter className="w-4 h-4 text-[#64748B]" />
+                  <div className="flex rounded-xl-lg bg-[#F1F5F9] p-1 border border-[#E2E8F0] font-mono text-xs">
                     {["All", "Gas & LNG", "EPC & Infra", "Pharma API"].map((sector) => (
                       <button
                         key={sector}
                         onClick={() => setSelectedSector(sector)}
-                        className={`px-3 py-1.5 rounded-md transition-colors ${selectedSector === sector ? "bg-white/10 text-gray-900 font-bold" : "text-muted-foreground hover:text-gray-900"}`}
+                        className={`px-3 py-1.5 rounded-xl-md transition-colors ${selectedSector === sector ? "bg-white/10 text-[#0F172A] font-bold" : "text-[#64748B] hover:text-[#0F172A]"}`}
                       >
                         {sector}
                       </button>
@@ -145,13 +149,13 @@ export default function NewsIntel() {
                 <div className="h-4 w-px bg-white/10" />
 
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
-                  <div className="flex rounded-lg bg-gray-100 p-1 border border-gray-200 font-mono text-xs">
+                  <Clock className="w-4 h-4 text-[#64748B]" />
+                  <div className="flex rounded-xl-lg bg-[#F1F5F9] p-1 border border-[#E2E8F0] font-mono text-xs">
                     {["Newest", "Oldest"].map((sort) => (
                       <button
                         key={sort}
                         onClick={() => setSortOrder(sort)}
-                        className={`px-3 py-1.5 rounded-md transition-colors ${sortOrder === sort ? "bg-white/10 text-gray-900 font-bold" : "text-muted-foreground hover:text-gray-900"}`}
+                        className={`px-3 py-1.5 rounded-xl-md transition-colors ${sortOrder === sort ? "bg-white/10 text-[#0F172A] font-bold" : "text-[#64748B] hover:text-[#0F172A]"}`}
                       >
                         {sort}
                       </button>
@@ -162,23 +166,23 @@ export default function NewsIntel() {
             </div>
 
             {/* AI Summary Banner */}
-            <div className="rounded-xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-gray-200 p-5 relative overflow-hidden group">
+            <div className="rounded-2xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-[#E2E8F0] p-5 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-96 h-full bg-[#E5A93C]/5 blur-3xl -z-10" />
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-[#E5A93C]/10 border border-[#E5A93C]/20 rounded-lg text-[#E5A93C] flex-shrink-0 animate-pulse">
+                <div className="p-3 bg-[#E5A93C]/10 border border-[#E5A93C]/20 rounded-xl-lg text-[#E5A93C] flex-shrink-0 animate-pulse">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs text-[#E5A93C] uppercase tracking-widest">AI Aggregated Executive Digest</span>
-                    <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground border-gray-200"}`}>
+                    <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded-xl ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5" : "text-[#64748B] border-[#E2E8F0]"}`}>
                       {isLive ? "SECURE FEED ACTIVE" : "OFFLINE STATIC DIGEST"}
                     </span>
                   </div>
-                  <h3 className="font-heading font-medium text-base text-gray-900">
+                  <h3 className="font-heading font-medium text-base text-[#0F172A]">
                     {digest.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed max-w-4xl">
+                  <p className="text-xs text-[#64748B] leading-relaxed max-w-4xl">
                     {digest.summary}
                   </p>
                 </div>
@@ -193,42 +197,42 @@ export default function NewsIntel() {
                   className="relative group perspective"
                   style={{ perspective: "1000px" }}
                 >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/0 via-[#E5A93C]/0 to-violet-500/0 rounded-xl blur opacity-0 group-hover:opacity-30 group-hover:via-[#E5A93C]/20 transition duration-700 pointer-events-none" />
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/0 via-[#E5A93C]/0 to-violet-500/0 rounded-2xl blur opacity-0 group-hover:opacity-30 group-hover:via-[#E5A93C]/20 transition duration-700 pointer-events-none" />
                   
                   <Card 
                     onClick={() => setSelectedArticle(news)}
-                    className="glass relative h-full flex flex-col justify-between border-gray-200 hover:border-[#E5A93C]/30 transition-all duration-500 bg-white/80 backdrop-blur-md overflow-hidden transform-gpu group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] cursor-pointer"
+                    className="glass relative h-full flex flex-col justify-between border-[#E2E8F0] hover:border-[#E5A93C]/30 transition-all duration-500 bg-white  overflow-hidden transform-gpu group-hover:-translate-y-1 group-hover:shadow-xl shadow-gray-200/50 cursor-pointer"
                   >
                     <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-[#E5A93C]/30 to-transparent transition-colors duration-500" />
                     
                     <CardHeader className="pb-3 relative z-10">
                       <div className="flex items-center justify-between text-xs font-mono mb-3">
-                        <span className="text-muted-foreground flex items-center gap-1.5 bg-gray-100 px-2 py-1 rounded border border-gray-200">
+                        <span className="text-[#64748B] flex items-center gap-1.5 bg-[#F1F5F9] px-2 py-1 rounded-xl border border-[#E2E8F0]">
                           <Calendar className="w-3.5 h-3.5 text-emerald-400" /> {news.date}
                         </span>
-                        <span className={`px-2.5 py-1 rounded border ${news.sectorColor} font-bold text-[10px] tracking-wider uppercase`}>
+                        <span className={`px-2.5 py-1 rounded-xl border ${news.sectorColor} font-bold text-[10px] tracking-wider uppercase`}>
                           {news.sector}
                         </span>
                       </div>
-                      <CardTitle className="text-base font-heading text-gray-800 group-hover:text-gray-900 transition-colors leading-snug">
+                      <CardTitle className="text-base font-heading text-gray-800 group-hover:text-[#0F172A] transition-colors leading-snug">
                         {news.title}
                       </CardTitle>
                     </CardHeader>
                     
                     <CardContent className="space-y-5 relative z-10 flex-1 flex flex-col">
-                      <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed flex-1">
+                      <p className="text-sm text-[#64748B] line-clamp-3 leading-relaxed flex-1">
                         {news.summary}
                       </p>
 
-                      <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 border-t border-gray-200">
-                        <span className={`px-2 py-1 rounded flex items-center gap-1 ${news.sentiment === "Bullish" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : news.sentiment === "Bearish" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : "bg-gray-100 text-muted-foreground border border-gray-200"}`}>
+                      <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 border-t border-[#E2E8F0]">
+                        <span className={`px-2 py-1 rounded-xl flex items-center gap-1 ${news.sentiment === "Bullish" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : news.sentiment === "Bearish" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : "bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0]"}`}>
                           <span className="opacity-70">Sentiment:</span> {news.sentiment}
                         </span>
-                        <span className={`px-2 py-1 rounded flex items-center gap-1 ${news.risk === "High" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : news.risk === "Medium" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"}`}>
+                        <span className={`px-2 py-1 rounded-xl flex items-center gap-1 ${news.risk === "High" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" : news.risk === "Medium" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"}`}>
                           <span className="opacity-70">Risk:</span> {news.risk}
                         </span>
-                        <span className="px-2 py-1 rounded bg-gray-100 text-muted-foreground border border-gray-200 ml-auto flex items-center gap-1">
-                          <span className="opacity-70">Src:</span> <span className="text-gray-900/70">{news.source}</span>
+                        <span className="px-2 py-1 rounded-xl bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0] ml-auto flex items-center gap-1">
+                          <span className="opacity-70">Src:</span> <span className="text-[#0F172A]/70">{news.source}</span>
                         </span>
                       </div>
                     </CardContent>
@@ -239,10 +243,10 @@ export default function NewsIntel() {
 
             {/* Empty State */}
             {sortedNews.length === 0 && (
-              <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
-                <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-                <h3 className="font-heading font-medium text-gray-900 mb-1">No Intelligence Found</h3>
-                <p className="text-xs text-muted-foreground">Try adjusting your query or sector filter.</p>
+              <div className="text-center py-16 border border-dashed border-[#E2E8F0] rounded-2xl">
+                <AlertCircle className="w-8 h-8 text-[#64748B] mx-auto mb-3" />
+                <h3 className="font-heading font-medium text-[#0F172A] mb-1">No Intelligence Found</h3>
+                <p className="text-xs text-[#64748B]">Try adjusting your query or sector filter.</p>
               </div>
             )}
 
@@ -252,42 +256,42 @@ export default function NewsIntel() {
 
       {/* Article Detail Panel */}
       {selectedArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-white/90 backdrop-blur-sm">
-          <div className="w-full max-w-2xl h-full bg-[#ffffff] border-l border-gray-200 p-8 overflow-y-auto flex flex-col justify-between shadow-2xl animate-in slide-in-from-right duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-white backdrop-blur-sm">
+          <div className="w-full max-w-2xl h-full bg-[#ffffff] border-l border-[#E2E8F0] p-8 overflow-y-auto flex flex-col justify-between shadow-2xl shadow-gray-200/50 animate-in slide-in-from-right duration-300">
             <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
                 <span className="font-mono text-xs text-[#E5A93C] uppercase tracking-wider">// AI Analysis Insights</span>
                 <button 
                   onClick={() => setSelectedArticle(null)}
-                  className="p-1 hover:bg-gray-100 text-muted-foreground hover:text-gray-900 rounded"
+                  className="p-1 hover:bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A] rounded-xl"
                 >
                   ✕ Close
                 </button>
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="px-2 py-0.5 rounded bg-gray-100 border border-gray-200 text-xs font-mono text-muted-foreground">
+                <span className="px-2 py-0.5 rounded-xl bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-mono text-[#64748B]">
                   {selectedArticle.date}
                 </span>
-                <span className="px-2.5 py-0.5 rounded bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-[#E5A93C] text-xs font-mono">
+                <span className="px-2.5 py-0.5 rounded-xl bg-[#E5A93C]/10 border border-[#E5A93C]/20 text-[#E5A93C] text-xs font-mono">
                   {selectedArticle.sector}
                 </span>
               </div>
 
-              <h1 className="font-heading text-2xl font-bold leading-tight text-gray-900">
+              <h1 className="font-heading text-2xl font-bold leading-tight text-[#0F172A]">
                 {selectedArticle.title}
               </h1>
 
-              <div className="p-4 rounded bg-white/70 border border-gray-200 space-y-2">
-                <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-widest">AI Generated Summary</h3>
-                <p className="text-sm text-gray-900 leading-relaxed">
+              <div className="p-4 rounded-xl bg-white/70 border border-[#E2E8F0] space-y-2">
+                <h3 className="font-mono text-xs text-[#64748B] uppercase tracking-widest">AI Generated Summary</h3>
+                <p className="text-sm text-[#0F172A] leading-relaxed">
                   {selectedArticle.summary}
                 </p>
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-widest">Key Structural Points</h3>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h3 className="font-mono text-xs text-[#64748B] uppercase tracking-widest">Key Structural Points</h3>
+                <ul className="space-y-2 text-sm text-[#475569]">
                   {selectedArticle.bulletPoints.map((point: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-[#E5A93C] font-mono mt-0.5">•</span>
@@ -297,19 +301,19 @@ export default function NewsIntel() {
                 </ul>
               </div>
 
-              <div className="space-y-2 pt-4 border-t border-gray-200">
-                <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-widest">Strategic Business Impact</h3>
+              <div className="space-y-2 pt-4 border-t border-[#E2E8F0]">
+                <h3 className="font-mono text-xs text-[#64748B] uppercase tracking-widest">Strategic Business Impact</h3>
                 <p className="text-sm text-emerald-400 font-medium">
                   {selectedArticle.impact}
                 </p>
               </div>
               
-              <div className="pt-6 mt-4 border-t border-gray-200">
+              <div className="pt-6 mt-4 border-t border-[#E2E8F0]">
                 <a 
                   href={selectedArticle.link || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center py-3 bg-[#E5A93C]/10 hover:bg-[#E5A93C]/20 border border-[#E5A93C]/30 text-[#E5A93C] rounded font-mono text-xs uppercase tracking-widest transition-colors"
+                  className="w-full flex items-center justify-center py-3 bg-[#E5A93C]/10 hover:bg-[#E5A93C]/20 border border-[#E5A93C]/30 text-[#E5A93C] rounded-xl font-mono text-xs uppercase tracking-widest transition-colors"
                 >
                   Read Full Article
                 </a>

@@ -59,9 +59,9 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
       
       <div className="relative z-20 flex flex-col items-center gap-6 text-center">
         <div className="flex gap-4">
-          <div className="h-4 w-4 bg-emerald-500 animate-pulse rounded-sm" />
-          <div className="h-4 w-4 bg-amber-500 animate-pulse delay-100 rounded-sm" />
-          <div className="h-4 w-4 bg-violet-500 animate-pulse delay-200 rounded-sm" />
+          <div className="h-4 w-4 bg-emerald-500 animate-pulse rounded-xl-sm" />
+          <div className="h-4 w-4 bg-amber-500 animate-pulse delay-100 rounded-xl-sm" />
+          <div className="h-4 w-4 bg-violet-500 animate-pulse delay-200 rounded-xl-sm" />
         </div>
         
         <div className="flex flex-col gap-2 mt-8 overflow-hidden text-sm md:text-base tracking-widest uppercase">
@@ -76,7 +76,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
           ))}
         </div>
         
-        <div className="mt-12 text-xs text-muted-foreground/60 tracking-widest">
+        <div className="mt-12 text-xs text-[#64748B]/60 tracking-widest">
           ESTABLISHING SECURE CONNECTION TO INTELLI-SECTOR
         </div>
       </div>
