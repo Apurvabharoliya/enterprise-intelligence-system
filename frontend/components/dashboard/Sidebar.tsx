@@ -88,7 +88,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-border space-y-2">
+      <div className="p-6 pb-12 border-t border-border space-y-2">
         <Link
           href="/"
           className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-semibold text-rose-400 hover:text-white hover:bg-rose-500/10 border border-rose-500/20 transition-colors"

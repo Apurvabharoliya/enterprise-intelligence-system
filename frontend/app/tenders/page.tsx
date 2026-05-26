@@ -185,7 +185,6 @@ export default function TenderIntel() {
               <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/10 flex flex-col justify-between">
                 <div className="flex items-center justify-between text-xs font-mono text-amber-500">
                   <span>TOTAL ESTIMATED PIPELINE VALUE</span>
-                  <IndianRupee className="w-4 h-4" />
                 </div>
                 <div>
                   <span className="text-3xl font-bold font-mono text-[#E5A93C]">₹{formattedTotal}Cr</span>

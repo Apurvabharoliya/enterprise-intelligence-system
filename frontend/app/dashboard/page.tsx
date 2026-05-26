@@ -151,23 +151,25 @@ export default function Dashboard() {
                         <span>Sector Distribution Analysis</span>
                         <span className="text-xs font-mono text-muted-foreground">Market share (%)</span>
                       </h3>
-                      <div className="flex-1 w-full min-h-0">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={sectorHeatmap}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" />
-                            <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} />
-                            <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} />
-                            <Tooltip 
-                              contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px" }} 
-                              labelClassName="font-mono text-white"
-                            />
-                            <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]}>
-                              {sectorHeatmap.map((entry, idx) => (
-                                <Cell key={`cell-${idx}`} fill={entry.color} />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
+                      <div className="flex-1 w-full relative">
+                        <div className="absolute inset-0">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={sectorHeatmap}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" />
+                              <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} />
+                              <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} />
+                              <Tooltip 
+                                contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px" }} 
+                                labelClassName="font-mono text-white"
+                              />
+                              <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]}>
+                                {sectorHeatmap.map((entry, idx) => (
+                                  <Cell key={`cell-${idx}`} fill={entry.color} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
                     
@@ -178,19 +180,21 @@ export default function Dashboard() {
                         <span>Tender Value Analytics (₹ Cr)</span>
                         <span className="text-xs font-mono text-primary flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> +24% QoQ</span>
                       </h3>
-                      <div className="flex-1 w-full min-h-0">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={tenderData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" />
-                            <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} />
-                            <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} />
-                            <Tooltip 
-                              contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px" }}
-                              labelClassName="font-mono text-white"
-                            />
-                            <Line type="monotone" dataKey="value" stroke="#8B5CF6" strokeWidth={3} dot={{ fill: "#8B5CF6", strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                          </LineChart>
-                        </ResponsiveContainer>
+                      <div className="flex-1 w-full relative">
+                        <div className="absolute inset-0">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={tenderData}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" />
+                              <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} />
+                              <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} />
+                              <Tooltip 
+                                contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px" }}
+                                labelClassName="font-mono text-white"
+                              />
+                              <Line type="monotone" dataKey="value" stroke="#8B5CF6" strokeWidth={3} dot={{ fill: "#8B5CF6", strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
                   </div>
