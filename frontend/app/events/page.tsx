@@ -83,12 +83,12 @@ export default function EventTracker() {
   const upcomingEvents = filteredEvents.filter(e => e.status === "Upcoming");
 
   return (
-    <div className="flex h-screen bg-[#050505] overflow-hidden font-sans text-white">
+    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans text-gray-900">
       <Sidebar />
       
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 bg-black/40 backdrop-blur-md z-10">
+        <header className="h-16 flex items-center justify-between px-8 border-b border-gray-200 bg-white/80 backdrop-blur-md z-10">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold font-heading tracking-tight flex items-center gap-3">
               <Calendar className="w-5 h-5 text-emerald-400" />
@@ -99,28 +99,28 @@ export default function EventTracker() {
           </div>
           
           <div className="flex items-center gap-6">
-            <div className="flex rounded-lg bg-white/5 p-1 border border-white/5 font-mono text-xs">
+            <div className="flex rounded-lg bg-gray-100 p-1 border border-gray-200 font-mono text-xs">
               {["All", "Gas & LNG", "EPC & Infra", "Pharma API"].map((sector) => (
                 <button
                   key={sector}
                   onClick={() => setSelectedSector(sector)}
-                  className={`px-4 py-1.5 rounded transition-all duration-300 ${selectedSector === sector ? "bg-emerald-500/20 text-emerald-400 font-bold shadow-lg shadow-emerald-500/10" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
+                  className={`px-4 py-1.5 rounded transition-all duration-300 ${selectedSector === sector ? "bg-emerald-500/20 text-emerald-400 font-bold shadow-lg shadow-emerald-500/10" : "text-muted-foreground hover:text-gray-900 hover:bg-gray-100"}`}
                 >
                   {sector}
                 </button>
               ))}
             </div>
             <div className="h-4 w-px bg-white/10" />
-            <div className="flex bg-white/5 rounded-lg p-1 border border-white/5">
+            <div className="flex bg-gray-100 rounded-lg p-1 border border-gray-200">
               <button 
                 onClick={() => setView("calendar")}
-                className={`px-3 py-1.5 text-xs font-mono rounded ${view === "calendar" ? "bg-white/10 text-white" : "text-muted-foreground"}`}
+                className={`px-3 py-1.5 text-xs font-mono rounded ${view === "calendar" ? "bg-white/10 text-gray-900" : "text-muted-foreground"}`}
               >
                 Calendar
               </button>
               <button 
                 onClick={() => setView("list")}
-                className={`px-3 py-1.5 text-xs font-mono rounded ${view === "list" ? "bg-white/10 text-white" : "text-muted-foreground"}`}
+                className={`px-3 py-1.5 text-xs font-mono rounded ${view === "list" ? "bg-white/10 text-gray-900" : "text-muted-foreground"}`}
               >
                 Live Feed
               </button>
@@ -145,7 +145,7 @@ export default function EventTracker() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="flex-1 p-6 rounded-2xl bg-black/40 border border-white/5 shadow-2xl calendar-premium backdrop-blur-sm"
+                    className="flex-1 p-6 rounded-2xl bg-white/80 border border-gray-200 shadow-2xl calendar-premium backdrop-blur-sm"
                   >
                     <FullCalendar
                       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -180,7 +180,7 @@ export default function EventTracker() {
                     className="flex-1 flex flex-col gap-8 overflow-y-auto pr-4 custom-scrollbar"
                   >
                     {/* AI Summary Banner */}
-                    <div className="rounded-xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-white/5 p-5 relative overflow-hidden group mb-2 shrink-0">
+                    <div className="rounded-xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-gray-200 p-5 relative overflow-hidden group mb-2 shrink-0">
                       <div className="absolute top-0 right-0 w-96 h-full bg-[#E5A93C]/5 blur-3xl -z-10" />
                       <div className="flex items-start gap-4">
                         <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 flex-shrink-0 animate-pulse">
@@ -189,11 +189,11 @@ export default function EventTracker() {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-xs text-emerald-400 uppercase tracking-widest">Live Event Digest</span>
-                            <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground border-white/10"}`}>
+                            <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground border-gray-200"}`}>
                               {isLive ? "ACTIVE TRACKING" : "OFFLINE"}
                             </span>
                           </div>
-                          <h3 className="font-heading font-medium text-base text-white">
+                          <h3 className="font-heading font-medium text-base text-gray-900">
                             Monitoring {upcomingEvents.length} Upcoming Sector Events
                           </h3>
                           <p className="text-xs text-muted-foreground leading-relaxed max-w-4xl">
@@ -220,11 +220,11 @@ export default function EventTracker() {
                           >
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/0 via-[#E5A93C]/0 to-violet-500/0 rounded-xl blur opacity-0 group-hover:opacity-30 group-hover:via-emerald-500/20 transition duration-700 pointer-events-none" />
                             
-                            <div className={`relative h-full flex flex-col justify-between border-white/5 hover:border-emerald-500/30 transition-all duration-500 bg-black/40 backdrop-blur-md overflow-hidden transform-gpu group-hover:-translate-y-1 cursor-pointer p-5 rounded-xl border ${activeEvent?.id === event.id ? "border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)] bg-white/5" : ""}`}>
+                            <div className={`relative h-full flex flex-col justify-between border-gray-200 hover:border-emerald-500/30 transition-all duration-500 bg-white/80 backdrop-blur-md overflow-hidden transform-gpu group-hover:-translate-y-1 cursor-pointer p-5 rounded-xl border ${activeEvent?.id === event.id ? "border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)] bg-gray-100" : ""}`}>
                               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-emerald-500/30 to-transparent transition-colors duration-500" />
                               
                               <div className="flex items-center justify-between text-xs font-mono mb-4">
-                                <span className="text-emerald-400 flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded border border-white/5 font-bold">
+                                <span className="text-emerald-400 flex items-center gap-1.5 bg-gray-100 px-2 py-1 rounded border border-gray-200 font-bold">
                                   {getCountdown(event.date)}
                                 </span>
                                 <span className="px-2.5 py-1 rounded border font-bold text-[10px] tracking-wider uppercase" style={{ borderColor: event.backgroundColor + '40', color: event.backgroundColor, backgroundColor: event.backgroundColor + '10' }}>
@@ -232,7 +232,7 @@ export default function EventTracker() {
                                 </span>
                               </div>
                               
-                              <h4 className="text-base font-heading text-white/90 group-hover:text-white transition-colors leading-snug mb-3">
+                              <h4 className="text-base font-heading text-gray-800 group-hover:text-gray-900 transition-colors leading-snug mb-3">
                                 {event.title}
                               </h4>
                               
@@ -240,11 +240,11 @@ export default function EventTracker() {
                                 {event.desc}
                               </p>
 
-                              <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 mt-4 border-t border-white/5">
-                                <span className="px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/10 flex items-center gap-1">
+                              <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 mt-4 border-t border-gray-200">
+                                <span className="px-2 py-1 rounded bg-gray-100 text-muted-foreground border border-gray-200 flex items-center gap-1">
                                   <Calendar className="w-3 h-3 opacity-70" /> {event.date}
                                 </span>
-                                <span className="px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/10 flex items-center gap-1 ml-auto">
+                                <span className="px-2 py-1 rounded bg-gray-100 text-muted-foreground border border-gray-200 flex items-center gap-1 ml-auto">
                                   <MapPin className="w-3 h-3 opacity-70" /> {event.location}
                                 </span>
                               </div>
@@ -253,9 +253,9 @@ export default function EventTracker() {
                         ))}
                       </div>
                       {upcomingEvents.length === 0 && (
-                        <div className="p-12 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
+                        <div className="p-12 text-center border border-dashed border-gray-200 rounded-xl bg-gray-100">
                           <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-                          <h3 className="font-heading text-white mb-1">No Upcoming Events</h3>
+                          <h3 className="font-heading text-gray-900 mb-1">No Upcoming Events</h3>
                           <p className="text-xs text-muted-foreground">Adjust filters to see more intelligence.</p>
                         </div>
                       )}
@@ -275,13 +275,13 @@ export default function EventTracker() {
                             onClick={() => setActiveEvent(event)}
                             className="relative group perspective"
                           >
-                            <div className={`relative h-full flex flex-col justify-between border-white/5 transition-all duration-300 bg-black/20 backdrop-blur-md overflow-hidden cursor-pointer p-4 rounded-xl border ${activeEvent?.id === event.id ? "border-white/20 bg-white/5" : "hover:bg-white/5"}`}>
+                            <div className={`relative h-full flex flex-col justify-between border-gray-200 transition-all duration-300 bg-gray-100 backdrop-blur-md overflow-hidden cursor-pointer p-4 rounded-xl border ${activeEvent?.id === event.id ? "border-gray-300 bg-gray-100" : "hover:bg-gray-100"}`}>
                               <div className="flex items-center justify-between text-[10px] font-mono mb-2">
-                                <span className="text-muted-foreground flex items-center gap-1.5 px-2 py-1 rounded border border-white/5">
+                                <span className="text-muted-foreground flex items-center gap-1.5 px-2 py-1 rounded border border-gray-200">
                                   {getCountdown(event.date)}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-heading text-white/50 line-through decoration-white/20 line-clamp-2">
+                              <h4 className="text-sm font-heading text-gray-500 line-through decoration-white/20 line-clamp-2">
                                 {event.title}
                               </h4>
                             </div>
@@ -296,7 +296,7 @@ export default function EventTracker() {
 
             {/* Event Details Panel */}
             <div className="h-[calc(100vh-8rem)]">
-              <div className="h-full rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 p-6 flex flex-col relative overflow-hidden backdrop-blur-md">
+              <div className="h-full rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent border border-gray-200 p-6 flex flex-col relative overflow-hidden backdrop-blur-md">
                 <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-50" />
                 
                 <div className="flex justify-between items-center mb-8">
@@ -326,7 +326,7 @@ export default function EventTracker() {
                           <span className="px-2.5 py-1 rounded border font-mono text-[10px] uppercase font-bold tracking-wider" style={{ borderColor: activeEvent.backgroundColor + '40', color: activeEvent.backgroundColor, backgroundColor: activeEvent.backgroundColor + '10' }}>
                             {activeEvent.sector}
                           </span>
-                          <span className={`px-2.5 py-1 rounded border font-mono text-[10px] uppercase font-bold tracking-wider ${activeEvent.status === 'Completed' ? 'bg-white/5 border-white/10 text-muted-foreground' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
+                          <span className={`px-2.5 py-1 rounded border font-mono text-[10px] uppercase font-bold tracking-wider ${activeEvent.status === 'Completed' ? 'bg-gray-100 border-gray-200 text-muted-foreground' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
                             {activeEvent.status}
                           </span>
                           {activeEvent.severity === 'High' && (
@@ -336,11 +336,11 @@ export default function EventTracker() {
                           )}
                         </div>
 
-                        <h3 className="text-2xl font-heading font-bold text-white leading-tight">
+                        <h3 className="text-2xl font-heading font-bold text-gray-900 leading-tight">
                           {activeEvent.title}
                         </h3>
 
-                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5">
+                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-200">
                           <div className="space-y-1">
                             <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Date</span>
                             <div className="text-sm font-medium flex items-center gap-2">
@@ -361,12 +361,12 @@ export default function EventTracker() {
                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6">
                         <div className="space-y-2">
                           <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Executive Summary</h4>
-                          <p className="text-sm text-white/80 leading-relaxed">
+                          <p className="text-sm text-gray-900/80 leading-relaxed">
                             {activeEvent.desc}
                           </p>
                         </div>
                         
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
+                        <div className="p-4 rounded-xl bg-gray-100 border border-gray-200 space-y-3">
                           <h4 className="text-xs font-mono text-emerald-400 uppercase tracking-widest flex items-center gap-2">
                             <AlertTriangle className="w-3.5 h-3.5" /> AI Risk Assessment
                           </h4>
@@ -378,10 +378,10 @@ export default function EventTracker() {
                         </div>
                       </div>
 
-                      <div className="mt-6 pt-6 border-t border-white/5">
+                      <div className="mt-6 pt-6 border-t border-gray-200">
                         <button 
                           onClick={() => generateEventReportPDF(activeEvent)}
-                          className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
+                          className="w-full py-3 px-4 bg-gray-100 hover:bg-white/10 text-gray-900 border border-gray-200 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
                         >
                           Generate Detailed Report (PDF)
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -473,7 +473,7 @@ export default function EventTracker() {
           font-weight: 600;
         }
         .calendar-premium .fc-h-event {
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid rgba(0,0,0,0.1);
           padding: 0;
           border-radius: 4px;
           transition: all 0.2s ease;

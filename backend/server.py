@@ -115,6 +115,13 @@ async def root():
         "timestamp": datetime.datetime.now().isoformat()
     }
 
+@app.on_event("startup")
+async def startup_event():
+    import asyncio
+    asyncio.create_task(update_news_cache_task())
+    asyncio.create_task(update_tenders_cache_task())
+    asyncio.create_task(update_events_cache_task())
+
 @app.get("/health")
 async def health_check():
     return {

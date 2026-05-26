@@ -84,13 +84,20 @@ export default function Dashboard() {
     loadAnalytics();
     loadNews();
 
-    const intervalId = setInterval(() => {
-      loadAnalytics();
-      loadNews();
-    }, 15000);
+    let intervalId: any;
+    
+    const startPolling = (isLiveState: boolean) => {
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(() => {
+        loadAnalytics();
+        loadNews();
+      }, isLiveState ? 15000 : 2000);
+    };
+    
+    startPolling(isLive);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [isLive]);
 
   return (
     <div className="flex h-screen bg-background overflow-hidden font-sans">
@@ -104,7 +111,7 @@ export default function Dashboard() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input 
                     placeholder="Search intelligence, companies, tenders..." 
-                    className="pl-9 bg-black/20 border-white/10 focus-visible:ring-primary/50 h-9 font-mono text-sm"
+                    className="pl-9 bg-gray-100 border-gray-200 focus-visible:ring-primary/50 h-9 font-mono text-sm"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <kbd className="inline-flex h-5 items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
@@ -136,10 +143,10 @@ export default function Dashboard() {
                     <p className="text-sm text-muted-foreground mt-1">Real-time intelligence overview across Gas, EPC, and Pharma sectors.</p>
                   </div>
                   <div className="flex gap-2 text-xs font-mono">
-                    <span className={`flex items-center gap-1.5 px-2 py-1 rounded-md border ${isLive ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 animate-pulse" : "bg-white/5 text-muted-foreground border-white/10"}`}>
+                    <span className={`flex items-center gap-1.5 px-2 py-1 rounded-md border ${isLive ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 animate-pulse" : "bg-gray-100 text-muted-foreground border-gray-200"}`}>
                       {isLive ? "● SECURE FEED LIVE" : "OFFLINE FALLBACK"}
                     </span>
-                    <span className="px-2 py-1 rounded-md bg-white/5 text-muted-foreground border border-white/10">
+                    <span className="px-2 py-1 rounded-md bg-gray-100 text-muted-foreground border border-gray-200">
                       {currentDate || "UTC +5:30"}
                     </span>
                   </div>
@@ -152,7 +159,7 @@ export default function Dashboard() {
                   {/* Left Column (Charts & Maps) */}
                   <div className="lg:col-span-2 space-y-6">
                     {/* Recharts Heatmap */}
-                    <div className="h-96 rounded-xl glass border border-white/5 p-5 flex flex-col relative overflow-hidden">
+                    <div className="h-96 rounded-xl glass border border-gray-200 p-5 flex flex-col relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -z-10" />
                       <h3 className="font-heading font-medium text-lg mb-4 flex items-center justify-between">
                         <span>Sector Distribution Analysis</span>
@@ -162,12 +169,12 @@ export default function Dashboard() {
                         <div className="absolute inset-0">
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={sectorHeatmap}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" />
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                               <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} />
                               <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} />
                               <Tooltip 
-                                contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px" }} 
-                                labelClassName="font-mono text-white"
+                                contentStyle={{ background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px" }} 
+                                labelClassName="font-mono text-gray-900"
                               />
                               <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]}>
                                 {sectorHeatmap.map((entry, idx) => (
@@ -181,7 +188,7 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Recharts Line */}
-                    <div className="h-96 rounded-xl glass border border-white/5 p-5 flex flex-col relative overflow-hidden">
+                    <div className="h-96 rounded-xl glass border border-gray-200 p-5 flex flex-col relative overflow-hidden">
                       <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-500/5 rounded-full blur-3xl -z-10" />
                       <h3 className="font-heading font-medium text-lg mb-4 flex items-center justify-between">
                         <span>Tender Value Analytics (₹ Cr)</span>
@@ -191,12 +198,12 @@ export default function Dashboard() {
                         <div className="absolute inset-0">
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={tenderData}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" />
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                               <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} />
                               <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} />
                               <Tooltip 
-                                contentStyle={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px" }}
-                                labelClassName="font-mono text-white"
+                                contentStyle={{ background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px" }}
+                                labelClassName="font-mono text-gray-900"
                               />
                               <Line type="monotone" dataKey="value" stroke="#8B5CF6" strokeWidth={3} dot={{ fill: "#8B5CF6", strokeWidth: 2 }} activeDot={{ r: 6 }} />
                             </LineChart>
@@ -208,7 +215,7 @@ export default function Dashboard() {
 
                   {/* Right Column (Live Feeds) */}
                   <div className="space-y-6">
-                    <div className="h-[49rem] rounded-xl glass border border-white/5 p-5 flex flex-col relative overflow-hidden">
+                    <div className="h-[49rem] rounded-xl glass border border-gray-200 p-5 flex flex-col relative overflow-hidden">
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -z-10" />
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-heading font-medium text-lg flex items-center gap-2">
@@ -224,7 +231,7 @@ export default function Dashboard() {
                             href={item.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-4 rounded-xl bg-black/40 backdrop-blur-md border border-white/5 hover:border-[#E5A93C]/30 hover:bg-black/60 transition-all duration-300 flex flex-col gap-2 relative group transform-gpu hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.5)] cursor-pointer"
+                            className="p-4 rounded-xl bg-white/80 backdrop-blur-md border border-gray-200 hover:border-[#E5A93C]/30 hover:bg-white/90 transition-all duration-300 flex flex-col gap-2 relative group transform-gpu hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.5)] cursor-pointer"
                           >
                             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-[#E5A93C]/30 to-transparent transition-colors duration-500" />
                             <div className="flex justify-between items-center text-xs font-mono">
@@ -233,13 +240,13 @@ export default function Dashboard() {
                                 {item.sector}
                               </span>
                             </div>
-                            <h4 className="font-heading font-medium text-sm text-white/90 group-hover:text-white transition-colors">
+                            <h4 className="font-heading font-medium text-sm text-gray-800 group-hover:text-gray-900 transition-colors">
                               {item.title}
                             </h4>
                             <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                               {item.summary}
                             </p>
-                            <div className="flex justify-between items-center mt-2 pt-3 border-t border-white/5 text-[10px] font-mono">
+                            <div className="flex justify-between items-center mt-2 pt-3 border-t border-gray-200 text-[10px] font-mono">
                               <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
                                 <Info className="w-3 h-3" /> Sentiment: Positive
                               </span>
@@ -252,7 +259,7 @@ export default function Dashboard() {
                           </a>
                         ))}
 
-                        <div className="p-4 rounded-lg border border-dashed border-white/10 flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
+                        <div className="p-4 rounded-lg border border-dashed border-gray-200 flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
                           <p>Waiting for incoming intelligence streams...</p>
                           <span className="mt-1 font-mono text-[10px] text-emerald-500 animate-pulse">● POLLING RSS FEEDS</span>
                         </div>
