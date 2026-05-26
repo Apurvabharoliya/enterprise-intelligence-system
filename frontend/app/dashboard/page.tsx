@@ -72,6 +72,7 @@ export default function Dashboard() {
           }));
           setFeed(mappedFeed);
           setIsLive(true);
+          
         }
       } catch (err) {
         console.error("Dashboard News Fetch Error:", err);

@@ -229,53 +229,91 @@ async def get_tenders():
     ]
 
 # 3. Events Timeline Endpoint
+EVENTS_CACHE = {"data": None, "last_fetched": None, "is_fetching": False}
+
+async def update_events_cache_task():
+    global EVENTS_CACHE
+    if EVENTS_CACHE.get("is_fetching"):
+        return
+    EVENTS_CACHE["is_fetching"] = True
+    try:
+        def fetch_live_events(query, sector_type):
+            encoded_query = urllib.parse.quote(query)
+            url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-IN&gl=IN&ceid=IN:en"
+            feed = feedparser.parse(url)
+            events = []
+            for entry in feed.entries[:8]: # Limit to 8 per sector
+                title_parts = entry.title.rsplit(" - ", 1)
+                title = title_parts[0]
+                text = (title + getattr(entry, "summary", "")).lower()
+                
+                severity = "High" if any(w in text for w in ["deadline", "audit", "inspection", "major", "crore", "billion", "summit"]) else "Medium"
+                
+                try:
+                    if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                        dt = datetime.datetime.fromtimestamp(time.mktime(entry.published_parsed))
+                    else:
+                        dt = datetime.datetime.now()
+                except:
+                    dt = datetime.datetime.now()
+                
+                status = "Upcoming" if any(w in text for w in ["upcoming", "scheduled", "expected", "deadline", "to be", "will be", "soon"]) else "Completed"
+                if status == "Upcoming":
+                    dt = dt + datetime.timedelta(days=random.randint(2, 14))
+
+                import re
+                raw_summary = getattr(entry, "summary", "")
+                clean_summary = re.sub(r'<[^>]+>', '', raw_summary)
+                if not clean_summary.strip():
+                    clean_summary = title
+
+                events.append({
+                    "id": entry.id if hasattr(entry, 'id') else entry.link,
+                    "day": dt.day,
+                    "title": title[:100] + "..." if len(title) > 100 else title,
+                    "type": sector_type,
+                    "severity": severity,
+                    "date": dt.strftime('%Y-%m-%d'),
+                    "desc": clean_summary[:200] + "...",
+                    "location": "India",
+                    "status": status
+                })
+            return events
+
+        import asyncio
+        try:
+            gas_task = asyncio.to_thread(fetch_live_events, "Gas pipeline (tender OR upcoming OR deadline) India", "gas")
+            pharma_task = asyncio.to_thread(fetch_live_events, "Pharma API (inspection OR audit OR upcoming) India", "pharma")
+            epc_task = asyncio.to_thread(fetch_live_events, "EPC infrastructure (deadline OR bid OR tender) India", "epc")
+            results = await asyncio.gather(gas_task, pharma_task, epc_task)
+            gas_events, pharma_events, epc_events = results
+        except AttributeError:
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                gas_events = pool.submit(fetch_live_events, "Gas pipeline (tender OR upcoming OR deadline) India", "gas").result()
+                pharma_events = pool.submit(fetch_live_events, "Pharma API (inspection OR audit OR upcoming) India", "pharma").result()
+                epc_events = pool.submit(fetch_live_events, "EPC infrastructure (deadline OR bid OR tender) India", "epc").result()
+
+        all_events = gas_events + pharma_events + epc_events
+        all_events.sort(key=lambda x: x["date"], reverse=True)
+        
+        EVENTS_CACHE["data"] = all_events
+        EVENTS_CACHE["last_fetched"] = datetime.datetime.now()
+    finally:
+        EVENTS_CACHE["is_fetching"] = False
+
 @app.get("/api/events")
-async def get_events():
-    today = datetime.datetime.now()
-    events = []
+async def get_events(background_tasks: BackgroundTasks):
+    global EVENTS_CACHE
+    now = datetime.datetime.now()
+    
+    if EVENTS_CACHE["data"] and EVENTS_CACHE["last_fetched"]:
+        if (now - EVENTS_CACHE["last_fetched"]).total_seconds() > 300:
+            background_tasks.add_task(update_events_cache_task)
+        return EVENTS_CACHE["data"]
 
-    # Curated realistic events — both past and future
-    curated_events = [
-        # Past events (completed)
-        {"offset": -45, "type": "pharma", "title": "USFDA Pre-Approval Inspection — Halol Unit III", "desc": "The US FDA conducted a 5-day pre-approval inspection at Sun Pharma's Halol Unit III API synthesis facility. Zero Form 483 observations were issued, clearing the unit for commercial exports to regulated markets.", "location": "Halol, Gujarat", "severity": "High"},
-        {"offset": -38, "type": "gas", "title": "PNGRB Q1 Tariff Revision Hearing", "desc": "The Petroleum & Natural Gas Regulatory Board held its quarterly tariff revision public hearing covering city gas distribution network charges across 14 geographical areas in Western India.", "location": "New Delhi", "severity": "High"},
-        {"offset": -30, "type": "epc", "title": "NHSRCL Bullet Train Viaduct Bid Opening", "desc": "Technical bid envelopes for the Mumbai-Ahmedabad High Speed Rail C-4 viaduct package (₹8,500 Cr) were opened. L&T and Afcons consortium emerged as the two technically qualified bidders.", "location": "Mumbai, Maharashtra", "severity": "High"},
-        {"offset": -22, "type": "pharma", "title": "WHO GMP Certification Audit — Dr. Reddy's", "desc": "World Health Organization Good Manufacturing Practice re-certification audit completed at the Srikakulam API facility. Certification renewed for 3 years covering 12 active pharmaceutical ingredients.", "location": "Srikakulam, Andhra Pradesh", "severity": "Medium"},
-        {"offset": -15, "type": "gas", "title": "Morbi CGD Network Commissioning Ceremony", "desc": "Adani Total Gas commissioned Phase-2 of the Morbi compressed natural gas distribution network, adding 45 km of steel pipeline and 12 new CNG stations serving the ceramic industrial cluster.", "location": "Morbi, Gujarat", "severity": "Medium"},
-        {"offset": -10, "type": "epc", "title": "NHAI NH-48 Expressway Contract Award", "desc": "National Highways Authority awarded the 6-lane access-controlled expressway construction contract worth ₹2,340 Cr to the Dilip Buildcon-HCC joint venture for the Vadodara bypass stretch.", "location": "Vadodara, Gujarat", "severity": "Medium"},
-        {"offset": -5, "type": "pharma", "title": "CDSCO New Drug Advisory Committee Meeting", "desc": "Central Drugs Standard Control Organization convened to review 8 new drug applications including 3 novel API formulations from Indian manufacturers targeting oncology and rare disease segments.", "location": "New Delhi", "severity": "High"},
-        {"offset": -2, "type": "gas", "title": "GAIL Eastern Grid Pipeline Integrity Audit", "desc": "Third-party pipeline integrity assessment completed for the 1,200 km Jagdishpur-Haldia-Bokaro-Dhamra natural gas pipeline covering corrosion monitoring, cathodic protection, and weld integrity checks.", "location": "Kolkata, West Bengal", "severity": "Medium"},
-        # Future events (upcoming)
-        {"offset": 3, "type": "epc", "title": "Metro Rail Phase IV DPR Review — Chennai", "desc": "Chennai Metro Rail Limited presents the Detailed Project Report for the 118 km Phase IV network expansion to the Ministry of Housing & Urban Affairs for final approval and budgetary allocation.", "location": "Chennai, Tamil Nadu", "severity": "High"},
-        {"offset": 7, "type": "pharma", "title": "Biocon Biologics — EMA Inspection Schedule", "desc": "European Medicines Agency inspectors scheduled to conduct a 4-day GMP compliance audit at Biocon's Bengaluru biologics manufacturing campus covering monoclonal antibody production lines.", "location": "Bengaluru, Karnataka", "severity": "High"},
-        {"offset": 12, "type": "gas", "title": "PPAC Monthly Gas Consumption Report Release", "desc": "Petroleum Planning & Analysis Cell releases the monthly domestic natural gas consumption and import statistics report covering sectoral allocation data for power, fertilizer, CGD, and industrial segments.", "location": "New Delhi", "severity": "Medium"},
-        {"offset": 18, "type": "epc", "title": "Sagarmala Port Modernization Tender Deadline", "desc": "Last date for submission of technical and financial bids for the Paradip Port inner harbour deepening and mechanization project under the Sagarmala programme, estimated at ₹1,800 Cr.", "location": "Paradip, Odisha", "severity": "High"},
-        {"offset": 25, "type": "pharma", "title": "India Pharma & Medical Device Expo 2026", "desc": "Annual flagship industry exhibition organized by FICCI and Department of Pharmaceuticals, featuring 400+ exhibitors, B2B meetings, and policy roundtables on API self-sufficiency and PLI scheme progress.", "location": "Pragati Maidan, New Delhi", "severity": "Medium"},
-        {"offset": 35, "type": "gas", "title": "CGD 12th Round Bidding Results Announcement", "desc": "PNGRB announces the results of the 12th CGD bidding round covering 65 geographical areas. Key contenders include GAIL Gas, Adani Total Gas, and Torrent Gas for Northeast and Eastern India territories.", "location": "New Delhi", "severity": "High"},
-        {"offset": 42, "type": "epc", "title": "DMRC Yellow Line Extension Pre-Bid Conference", "desc": "Delhi Metro Rail Corporation hosts mandatory pre-bid conference for the 12 km Yellow Line southern extension covering underground and elevated sections, with estimated project cost of ₹6,200 Cr.", "location": "New Delhi", "severity": "Medium"},
-        {"offset": 55, "type": "pharma", "title": "NPPA Drug Price Ceiling Quarterly Review", "desc": "National Pharmaceutical Pricing Authority conducts its quarterly review of ceiling prices for 856 scheduled drug formulations under the Drug Price Control Order, potentially impacting API procurement costs.", "location": "New Delhi", "severity": "High"},
-        {"offset": 70, "type": "gas", "title": "Kochi LNG Terminal Phase-III Expansion Groundbreaking", "desc": "Petronet LNG ceremonial groundbreaking for the 2.5 MTPA capacity expansion at the Kochi LNG import terminal, including new regasification trains and jetty infrastructure upgrades.", "location": "Kochi, Kerala", "severity": "High"},
-        {"offset": 90, "type": "epc", "title": "Smart Cities Mission — Final Review Summit", "desc": "Ministry of Housing & Urban Affairs hosts the final comprehensive review of all 100 Smart Cities Mission projects covering completion status, fund utilization, and handover protocols to urban local bodies.", "location": "New Delhi", "severity": "Medium"},
-        {"offset": 120, "type": "pharma", "title": "PLI Scheme Phase-II API Manufacturing Review", "desc": "Department of Pharmaceuticals conducts mid-term review of the Production Linked Incentive scheme for bulk drug manufacturing, covering 35 approved projects with committed investments of ₹15,000 Cr.", "location": "New Delhi", "severity": "High"},
-        {"offset": 150, "type": "gas", "title": "National Gas Grid — Eastern Corridor Completion Target", "desc": "Target completion date for the Barauni-Guwahati section of the National Gas Grid eastern corridor, a 729 km pipeline project executed by GAIL with an investment of ₹5,900 Cr.", "location": "Guwahati, Assam", "severity": "High"},
-    ]
-
-    for i, evt in enumerate(curated_events):
-        event_date = today + datetime.timedelta(days=evt["offset"])
-        status = "Completed" if evt["offset"] < 0 else "Upcoming"
-        events.append({
-            "id": i + 1,
-            "day": event_date.day,
-            "title": evt["title"],
-            "type": evt["type"],
-            "severity": evt["severity"],
-            "date": event_date.strftime('%Y-%m-%d'),
-            "desc": evt["desc"],
-            "location": evt.get("location", "India"),
-            "status": status
-        })
-
-    return events
+    await update_events_cache_task()
+    return EVENTS_CACHE["data"]
 
 # 4. Watchlist Surveillance Endpoints (Stateful REST Operations)
 @app.get("/api/watchlists")
