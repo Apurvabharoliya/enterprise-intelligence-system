@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Preloader from "@/components/preloader/Preloader";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopWidgets from "@/components/dashboard/TopWidgets";
 import { Search, Bell, Command, Settings, ShieldAlert, ArrowUpRight, TrendingUp, Info } from "lucide-react";
@@ -25,6 +24,7 @@ export default function Dashboard() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+  
   useEffect(() => {
     async function loadDashboardData() {
       try {
@@ -79,6 +79,8 @@ export default function Dashboard() {
         }
       } catch (err) {
         console.error("Dashboard Fetch Error:", err);
+      } finally {
+        setLoading(false);
       }
     }
     loadDashboardData();
@@ -86,17 +88,11 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-background overflow-hidden font-sans">
-      <AnimatePresence>
-        {loading && <Preloader onComplete={() => setLoading(false)} />}
-      </AnimatePresence>
-
-      {!loading && (
-        <>
-          <Sidebar />
-          
-          <main className="flex-1 flex flex-col relative overflow-hidden">
-            {/* Topbar */}
-            <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/40 backdrop-blur-md z-10">
+      <Sidebar />
+      
+      <main className="flex-1 flex flex-col relative overflow-hidden">
+        {/* Topbar */}
+        <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/40 backdrop-blur-md z-10">
               <div className="flex items-center gap-4 w-full max-w-md">
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -257,8 +253,6 @@ export default function Dashboard() {
               </motion.div>
             </div>
           </main>
-        </>
-      )}
     </div>
   );
 }
