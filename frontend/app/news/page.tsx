@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
-import { Search, Sparkles, Filter, Calendar, AlertCircle, Rss } from "lucide-react";
+import { Search, Sparkles, Filter, Calendar, AlertCircle, Rss, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { API_URL } from "@/lib/config";
 
 export default function NewsIntel() {
   const [selectedSector, setSelectedSector] = useState("All");
+  const [sortOrder, setSortOrder] = useState("Newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
   const [digest, setDigest] = useState({
@@ -78,6 +79,12 @@ export default function NewsIntel() {
     return matchesSector && matchesSearch;
   });
 
+  const sortedNews = [...filteredNews].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return sortOrder === "Newest" ? dateB - dateA : dateA - dateB;
+  });
+
   return (
     <div className="flex h-screen bg-background overflow-hidden font-sans">
       <Sidebar />
@@ -112,19 +119,38 @@ export default function NewsIntel() {
                 <p className="text-sm text-muted-foreground mt-1">AI-extracted industry signals, regulatory audits, and structural updates.</p>
               </div>
 
-              {/* Sector Selector */}
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <div className="flex rounded-lg bg-black/20 p-1 border border-white/5 font-mono text-xs">
-                  {["All", "Gas & LNG", "EPC & Infra", "Pharma API"].map((sector) => (
-                    <button
-                      key={sector}
-                      onClick={() => setSelectedSector(sector)}
-                      className={`px-3 py-1.5 rounded-md transition-colors ${selectedSector === sector ? "bg-white/10 text-white font-bold" : "text-muted-foreground hover:text-white"}`}
-                    >
-                      {sector}
-                    </button>
-                  ))}
+              {/* Filters */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex rounded-lg bg-black/20 p-1 border border-white/5 font-mono text-xs">
+                    {["All", "Gas & LNG", "EPC & Infra", "Pharma API"].map((sector) => (
+                      <button
+                        key={sector}
+                        onClick={() => setSelectedSector(sector)}
+                        className={`px-3 py-1.5 rounded-md transition-colors ${selectedSector === sector ? "bg-white/10 text-white font-bold" : "text-muted-foreground hover:text-white"}`}
+                      >
+                        {sector}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="h-4 w-px bg-white/10" />
+
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex rounded-lg bg-black/20 p-1 border border-white/5 font-mono text-xs">
+                    {["Newest", "Oldest"].map((sort) => (
+                      <button
+                        key={sort}
+                        onClick={() => setSortOrder(sort)}
+                        className={`px-3 py-1.5 rounded-md transition-colors ${sortOrder === sort ? "bg-white/10 text-white font-bold" : "text-muted-foreground hover:text-white"}`}
+                      >
+                        {sort}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -155,7 +181,7 @@ export default function NewsIntel() {
 
             {/* News Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredNews.map((news, idx) => (
+              {sortedNews.map((news, idx) => (
                 <div 
                   key={news.id}
                   className="relative group perspective"
@@ -206,7 +232,7 @@ export default function NewsIntel() {
             </div>
 
             {/* Empty State */}
-            {filteredNews.length === 0 && (
+            {sortedNews.length === 0 && (
               <div className="text-center py-16 border border-dashed border-white/10 rounded-xl">
                 <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
                 <h3 className="font-heading font-medium text-white mb-1">No Intelligence Found</h3>

@@ -15,7 +15,7 @@ export default function EventTracker() {
   const [activeEvent, setActiveEvent] = useState<any | null>(null);
   const [events, setEvents] = useState<any[]>([]);
   const [isLive, setIsLive] = useState(false);
-  const [view, setView] = useState<"calendar" | "list">("calendar");
+  const [view, setView] = useState<"calendar" | "list">("list");
 
   useEffect(() => {
     async function fetchEvents() {
@@ -115,7 +115,7 @@ export default function EventTracker() {
                 onClick={() => setView("list")}
                 className={`px-3 py-1.5 text-xs font-mono rounded ${view === "list" ? "bg-white/10 text-white" : "text-muted-foreground"}`}
               >
-                Timeline
+                Live Feed
               </button>
             </div>
           </div>
@@ -172,54 +172,111 @@ export default function EventTracker() {
                     transition={{ duration: 0.4 }}
                     className="flex-1 flex flex-col gap-8 overflow-y-auto pr-4 custom-scrollbar"
                   >
-                    <div>
-                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2">
-                        <Activity className="w-5 h-5 text-emerald-400" /> Upcoming Events
-                      </h3>
-                      <div className="space-y-4">
-                        {upcomingEvents.map((event, i) => (
-                          <motion.div 
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            key={event.id}
-                            onClick={() => setActiveEvent(event)}
-                            className={`p-5 rounded-xl border cursor-pointer transition-all duration-300 ${activeEvent?.id === event.id ? "bg-white/10 border-white/20 shadow-lg" : "bg-black/40 border-white/5 hover:border-white/10 hover:bg-white/5"}`}
-                          >
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="flex gap-3 items-center">
-                                <span className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" style={{ backgroundColor: event.backgroundColor, boxShadow: `0 0 10px ${event.backgroundColor}80` }} />
-                                <h4 className="font-semibold text-base">{event.title}</h4>
-                              </div>
-                              <span className="text-xs font-mono px-2 py-1 bg-white/5 rounded border border-white/5 text-emerald-400 font-bold">{getCountdown(event.date)}</span>
-                            </div>
-                            <p className="text-sm text-muted-foreground ml-6 line-clamp-2">{event.desc}</p>
-                          </motion.div>
-                        ))}
-                        {upcomingEvents.length === 0 && <div className="p-8 text-center text-muted-foreground border border-dashed border-white/10 rounded-xl">No upcoming events found.</div>}
+                    {/* AI Summary Banner */}
+                    <div className="rounded-xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-white/5 p-5 relative overflow-hidden group mb-2">
+                      <div className="absolute top-0 right-0 w-96 h-full bg-[#E5A93C]/5 blur-3xl -z-10" />
+                      <div className="flex items-start gap-4">
+                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 flex-shrink-0 animate-pulse">
+                          <Activity className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs text-emerald-400 uppercase tracking-widest">Live Event Digest</span>
+                            <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground border-white/10"}`}>
+                              {isLive ? "ACTIVE TRACKING" : "OFFLINE"}
+                            </span>
+                          </div>
+                          <h3 className="font-heading font-medium text-base text-white">
+                            Monitoring {upcomingEvents.length} Upcoming Sector Events
+                          </h3>
+                          <p className="text-xs text-muted-foreground leading-relaxed max-w-4xl">
+                            Continuous surveillance of scheduled industry events, regulatory deadlines, and strategic announcements. AI models are evaluating potential market impacts in real-time.
+                          </p>
+                        </div>
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2 text-muted-foreground">
-                        <Clock className="w-5 h-5" /> Past Events
+                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-emerald-400" /> Upcoming Events
                       </h3>
-                      <div className="space-y-4 opacity-70">
-                        {pastEvents.map((event, i) => (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {upcomingEvents.map((event, i) => (
                           <motion.div 
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: i * 0.05 }}
                             key={event.id}
                             onClick={() => setActiveEvent(event)}
-                            className={`p-5 rounded-xl border cursor-pointer transition-all duration-300 ${activeEvent?.id === event.id ? "bg-white/10 border-white/20" : "bg-black/20 border-white/5 hover:bg-white/5"}`}
+                            className="relative group perspective"
+                            style={{ perspective: "1000px" }}
                           >
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="flex gap-3 items-center">
-                                <span className="w-3 h-3 rounded-full opacity-50" style={{ backgroundColor: event.backgroundColor }} />
-                                <h4 className="font-semibold text-base line-through decoration-white/20">{event.title}</h4>
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/0 via-[#E5A93C]/0 to-violet-500/0 rounded-xl blur opacity-0 group-hover:opacity-30 group-hover:via-emerald-500/20 transition duration-700 pointer-events-none" />
+                            
+                            <div className={`relative h-full flex flex-col justify-between border-white/5 hover:border-emerald-500/30 transition-all duration-500 bg-black/40 backdrop-blur-md overflow-hidden transform-gpu group-hover:-translate-y-1 cursor-pointer p-5 rounded-xl border ${activeEvent?.id === event.id ? "border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)] bg-white/5" : ""}`}>
+                              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-emerald-500/30 to-transparent transition-colors duration-500" />
+                              
+                              <div className="flex items-center justify-between text-xs font-mono mb-4">
+                                <span className="text-emerald-400 flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded border border-white/5 font-bold">
+                                  {getCountdown(event.date)}
+                                </span>
+                                <span className="px-2.5 py-1 rounded border font-bold text-[10px] tracking-wider uppercase" style={{ borderColor: event.backgroundColor + '40', color: event.backgroundColor, backgroundColor: event.backgroundColor + '10' }}>
+                                  {event.sector}
+                                </span>
                               </div>
-                              <span className="text-xs font-mono px-2 py-1 text-muted-foreground">{getCountdown(event.date)}</span>
+                              
+                              <h4 className="text-base font-heading text-white/90 group-hover:text-white transition-colors leading-snug mb-3">
+                                {event.title}
+                              </h4>
+                              
+                              <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed flex-1">
+                                {event.desc}
+                              </p>
+
+                              <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 mt-4 border-t border-white/5">
+                                <span className="px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/10 flex items-center gap-1">
+                                  <Calendar className="w-3 h-3 opacity-70" /> {event.date}
+                                </span>
+                                <span className="px-2 py-1 rounded bg-white/5 text-muted-foreground border border-white/10 flex items-center gap-1 ml-auto">
+                                  <MapPin className="w-3 h-3 opacity-70" /> {event.location}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                      {upcomingEvents.length === 0 && (
+                        <div className="p-12 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
+                          <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-3 opacity-50" />
+                          <h3 className="font-heading text-white mb-1">No Upcoming Events</h3>
+                          <p className="text-xs text-muted-foreground">Adjust filters to see more intelligence.</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-4">
+                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2 text-muted-foreground">
+                        <Clock className="w-5 h-5" /> Past Events
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-70">
+                        {pastEvents.map((event, i) => (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.05 }}
+                            key={event.id}
+                            onClick={() => setActiveEvent(event)}
+                            className="relative group perspective"
+                          >
+                            <div className={`relative h-full flex flex-col justify-between border-white/5 transition-all duration-300 bg-black/20 backdrop-blur-md overflow-hidden cursor-pointer p-4 rounded-xl border ${activeEvent?.id === event.id ? "border-white/20 bg-white/5" : "hover:bg-white/5"}`}>
+                              <div className="flex items-center justify-between text-[10px] font-mono mb-2">
+                                <span className="text-muted-foreground flex items-center gap-1.5 px-2 py-1 rounded border border-white/5">
+                                  {getCountdown(event.date)}
+                                </span>
+                              </div>
+                              <h4 className="text-sm font-heading text-white/50 line-through decoration-white/20">
+                                {event.title}
+                              </h4>
                             </div>
                           </motion.div>
                         ))}

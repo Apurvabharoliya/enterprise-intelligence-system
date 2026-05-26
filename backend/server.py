@@ -127,8 +127,17 @@ async def health_check():
     }
 
 # 1. News Feed & AI Daily Digest Endpoint
+NEWS_CACHE = {"data": None, "last_fetched": None}
+
 @app.get("/api/news")
 async def get_news_feed():
+    global NEWS_CACHE
+    import asyncio
+    
+    now = datetime.datetime.now()
+    if NEWS_CACHE["data"] and NEWS_CACHE["last_fetched"] and (now - NEWS_CACHE["last_fetched"]).total_seconds() < 300:
+        return NEWS_CACHE["data"]
+
     def fetch_live_news(query, sector):
         encoded_query = urllib.parse.quote(query)
         url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-IN&gl=IN&ceid=IN:en"
@@ -166,20 +175,33 @@ async def get_news_feed():
             })
         return articles
 
-    gas_news = fetch_live_news("Gas LNG India", "Gas & LNG")
-    pharma_news = fetch_live_news("Pharma API India", "Pharma API")
-    epc_news = fetch_live_news("EPC Infrastructure India", "EPC & Infra")
+    try:
+        gas_task = asyncio.to_thread(fetch_live_news, "Gas LNG India", "Gas & LNG")
+        pharma_task = asyncio.to_thread(fetch_live_news, "Pharma API India", "Pharma API")
+        epc_task = asyncio.to_thread(fetch_live_news, "EPC Infrastructure India", "EPC & Infra")
+        results = await asyncio.gather(gas_task, pharma_task, epc_task)
+        gas_news, pharma_news, epc_news = results
+    except AttributeError:
+        # Fallback for Python < 3.9
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            gas_news = pool.submit(fetch_live_news, "Gas LNG India", "Gas & LNG").result()
+            pharma_news = pool.submit(fetch_live_news, "Pharma API India", "Pharma API").result()
+            epc_news = pool.submit(fetch_live_news, "EPC Infrastructure India", "EPC & Infra").result()
 
     all_articles = gas_news + pharma_news + epc_news
     random.shuffle(all_articles)
 
-    return {
+    NEWS_CACHE["data"] = {
         "digest": {
             "title": "Industrial Intelligence Digest",
             "summary": "AI Summaries show port freight rates declining by 8% next week. Watch out for FDA compliance checks scheduled across Gujarat API synthesis clusters on May 24. Heavy structural JVs in EPC are currently trending bullish."
         },
         "articles": all_articles[:10]
     }
+    NEWS_CACHE["last_fetched"] = now
+
+    return NEWS_CACHE["data"]
 
 # 2. Bidding & Tenders Endpoint
 @app.get("/api/tenders")
