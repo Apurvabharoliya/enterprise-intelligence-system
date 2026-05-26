@@ -211,8 +211,9 @@ async def get_news_feed(background_tasks: BackgroundTasks):
             background_tasks.add_task(update_news_cache_task)
         return NEWS_CACHE["data"]
 
-    # First fetch blocks until ready
-    await update_news_cache_task()
+    if not NEWS_CACHE["data"]:
+        await update_news_cache_task()
+        return NEWS_CACHE["data"] if NEWS_CACHE["data"] else {"digest": {"title": "Error", "summary": "Failed to load"}, "articles": []}
     return NEWS_CACHE["data"]
 
 # 2. Bidding & Tenders Endpoint
@@ -300,7 +301,9 @@ async def get_tenders(background_tasks: BackgroundTasks):
             background_tasks.add_task(update_tenders_cache_task)
         return TENDERS_CACHE["data"]
 
-    await update_tenders_cache_task()
+    if not TENDERS_CACHE["data"]:
+        await update_tenders_cache_task()
+        return TENDERS_CACHE["data"] if TENDERS_CACHE["data"] else []
     return TENDERS_CACHE["data"]
 
 # 3. Events Timeline Endpoint
@@ -387,7 +390,9 @@ async def get_events(background_tasks: BackgroundTasks):
             background_tasks.add_task(update_events_cache_task)
         return EVENTS_CACHE["data"]
 
-    await update_events_cache_task()
+    if not EVENTS_CACHE["data"]:
+        await update_events_cache_task()
+        return EVENTS_CACHE["data"] if EVENTS_CACHE["data"] else []
     return EVENTS_CACHE["data"]
 
 # 4. Watchlist Surveillance Endpoints (Stateful REST Operations)

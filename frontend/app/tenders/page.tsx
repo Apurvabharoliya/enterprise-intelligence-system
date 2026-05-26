@@ -70,8 +70,8 @@ export default function TenderIntel() {
     
     // Custom sort for value
     if (sortConfig.key === 'value') {
-      const valA = parseFloat(a.value.replace(/[^\\d.]/g, '')) || 0;
-      const valB = parseFloat(b.value.replace(/[^\\d.]/g, '')) || 0;
+      const valA = parseFloat(a.value.replace(/[^\d.]/g, '')) || 0;
+      const valB = parseFloat(b.value.replace(/[^\d.]/g, '')) || 0;
       return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
     }
     
@@ -85,7 +85,7 @@ export default function TenderIntel() {
   });
 
   const totalValue = filteredTenders.reduce((sum, tender) => {
-    const num = parseFloat(tender.value.replace(/[^\\d.]/g, ''));
+    const num = parseFloat(tender.value.replace(/[^\d.]/g, ''));
     if (!isNaN(num)) return sum + num;
     return sum;
   }, 0);
