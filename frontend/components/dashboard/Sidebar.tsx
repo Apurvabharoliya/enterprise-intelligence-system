@@ -36,7 +36,7 @@ export default function Sidebar() {
     <>
       <button 
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed bottom-6 right-6 z-[60] p-4 rounded-full bg-emerald-500 text-black shadow-lg shadow-emerald-500/20 border border-emerald-400"
+        className="lg:hidden fixed bottom-6 right-6 z-[60] p-4 rounded-full bg-emerald-500 text-[#111111] shadow-lg shadow-emerald-500/20 border border-emerald-400"
       >
         {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
@@ -49,14 +49,14 @@ export default function Sidebar() {
       )}
 
       <aside className={cn(
-        "w-full sm:w-64 flex flex-col border-r border-border bg-background/95 backdrop-blur-xl h-full z-[50]",
+        "w-full sm:w-64 flex flex-col border-r border-border bg-[#FAF7F2]/95 backdrop-blur-xl h-full z-[50]",
         "fixed lg:static top-0 left-0 transition-transform duration-300",
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         <div className="h-16 flex items-center px-6 border-b border-border">
         <Link href="/" className="font-heading font-bold text-xl tracking-wide flex items-center gap-2 hover:opacity-85 transition-opacity">
           <div className="w-6 h-6 rounded-xl-sm bg-gradient-to-tr from-emerald-500 via-amber-500 to-violet-500" />
-          Intelli<span className="text-[#64748B] font-light">Sector</span>
+          Intelli<span className="text-[#555555] font-light">Sector</span>
         </Link>
       </div>
 
@@ -71,7 +71,7 @@ export default function Sidebar() {
                 "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl-md text-sm font-medium transition-colors",
                 isActive 
                   ? "text-primary bg-primary/10" 
-                  : "text-[#64748B] hover:text-primary hover:bg-white/5"
+                  : "text-[#555555] hover:text-primary hover:bg-[#FAF7F2]/5"
               )}
             >
               {isActive && (
@@ -81,7 +81,7 @@ export default function Sidebar() {
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-              <item.icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-[#64748B] group-hover:text-primary")} />
+              <item.icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-[#555555] group-hover:text-primary")} />
               {item.name}
             </Link>
           );

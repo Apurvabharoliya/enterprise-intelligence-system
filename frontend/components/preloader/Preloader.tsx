@@ -76,7 +76,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
           ))}
         </div>
         
-        <div className="mt-12 text-xs text-[#64748B]/60 tracking-widest">
+        <div className="mt-12 text-xs text-[#555555]/60 tracking-widest">
           ESTABLISHING SECURE CONNECTION TO INTELLI-SECTOR
         </div>
       </div>

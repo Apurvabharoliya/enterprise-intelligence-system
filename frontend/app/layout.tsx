@@ -34,7 +34,7 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary/20 selection:text-primary">
+      <body className="min-h-full flex flex-col bg-[#FAF7F2] text-foreground selection:bg-primary/20 selection:text-primary">
         {children}
       </body>
     </html>

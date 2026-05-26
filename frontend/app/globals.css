@@ -50,24 +50,24 @@
 }
 
 :root {
-  --background: #FFFFFF;
-  --foreground: #09090B;
-  --card: #FFFFFF;
+  --background: #FAF7F2;
+  --foreground: #111111;
+  --card: #FAF7F2;
   --card-foreground: #09090B;
-  --popover: #FFFFFF;
+  --popover: #FAF7F2;
   --popover-foreground: #09090B;
-  --primary: #09090B;
+  --primary: #111111;
   --primary-foreground: #FAFAFA;
-  --secondary: #F4F4F5;
+  --secondary: #EAE4DA;
   --secondary-foreground: #09090B;
-  --muted: #F4F4F5;
-  --muted-foreground: #71717A;
+  --muted: #EAE4DA;
+  --muted-foreground: #555555;
   --accent: #F4F4F5;
   --accent-foreground: #09090B;
   --destructive: #EF4444;
   --destructive-foreground: #FAFAFA;
-  --border: #E4E4E7;
-  --input: #E4E4E7;
+  --border: #D9CFC1;
+  --input: #D9CFC1;
   --ring: #A1A1AA;
   --radius: 0.5rem;
   
@@ -86,24 +86,24 @@
 }
 
 .dark {
-  --background: #FFFFFF;
-  --foreground: #09090B;
-  --card: #FFFFFF;
+  --background: #FAF7F2;
+  --foreground: #111111;
+  --card: #FAF7F2;
   --card-foreground: #09090B;
-  --popover: #FFFFFF;
+  --popover: #FAF7F2;
   --popover-foreground: #09090B;
-  --primary: #09090B;
+  --primary: #111111;
   --primary-foreground: #FAFAFA;
-  --secondary: #F4F4F5;
+  --secondary: #EAE4DA;
   --secondary-foreground: #09090B;
-  --muted: #F4F4F5;
-  --muted-foreground: #71717A;
+  --muted: #EAE4DA;
+  --muted-foreground: #555555;
   --accent: #F4F4F5;
   --accent-foreground: #09090B;
   --destructive: #EF4444;
   --destructive-foreground: #FAFAFA;
-  --border: #E4E4E7;
-  --input: #E4E4E7;
+  --border: #D9CFC1;
+  --input: #D9CFC1;
   --ring: #A1A1AA;
 
   --sidebar: #FAFAFA;
@@ -121,7 +121,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-[#FAF7F2] text-foreground font-sans antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-medium tracking-tight;
@@ -146,8 +146,8 @@
 
 /* Utilities */
 .glass {
-  @apply bg-white/70 backdrop-blur-xl border border-[#E2E8F0] shadow-lg shadow-[#0F172A]/5;
+  @apply bg-[#FAF7F2]/70 backdrop-blur-xl border border-[#D9CFC1] shadow-lg shadow-[#0F172A]/5;
 }
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#0F172A] to-[#64748B];
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#111111] to-[#555555];
 }

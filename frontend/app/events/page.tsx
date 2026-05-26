@@ -87,12 +87,12 @@ export default function EventTracker() {
   const upcomingEvents = filteredEvents.filter(e => e.status === "Upcoming");
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden font-sans text-[#0F172A]">
+    <div className="flex h-screen bg-[#F2EFE9] overflow-hidden font-sans text-[#111111]">
       <Sidebar />
       
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-8 border-b border-[#E2E8F0] bg-white  z-10">
+        <header className="h-16 flex items-center justify-between px-8 border-b border-[#D9CFC1] bg-[#FAF7F2]  z-10">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold font-heading tracking-tight flex items-center gap-3">
               <Calendar className="w-5 h-5 text-emerald-400" />
@@ -103,28 +103,28 @@ export default function EventTracker() {
           </div>
           
           <div className="flex items-center gap-6">
-            <div className="flex rounded-xl-lg bg-[#F1F5F9] p-1 border border-[#E2E8F0] font-mono text-xs">
+            <div className="flex rounded-xl-lg bg-[#EAE4DA] p-1 border border-[#D9CFC1] font-mono text-xs">
               {["All", "Gas & LNG", "EPC & Infra", "Pharma API"].map((sector) => (
                 <button
                   key={sector}
                   onClick={() => setSelectedSector(sector)}
-                  className={`px-4 py-1.5 rounded-xl transition-all duration-300 ${selectedSector === sector ? "bg-emerald-500/20 text-emerald-400 font-bold shadow-lg shadow-emerald-500/10" : "text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9]"}`}
+                  className={`px-4 py-1.5 rounded-xl transition-all duration-300 ${selectedSector === sector ? "bg-emerald-500/20 text-emerald-400 font-bold shadow-lg shadow-emerald-500/10" : "text-[#555555] hover:text-[#111111] hover:bg-[#EAE4DA]"}`}
                 >
                   {sector}
                 </button>
               ))}
             </div>
-            <div className="h-4 w-px bg-white/10" />
-            <div className="flex bg-[#F1F5F9] rounded-xl-lg p-1 border border-[#E2E8F0]">
+            <div className="h-4 w-px bg-[#FAF7F2]/10" />
+            <div className="flex bg-[#EAE4DA] rounded-xl-lg p-1 border border-[#D9CFC1]">
               <button 
                 onClick={() => setView("calendar")}
-                className={`px-3 py-1.5 text-xs font-mono rounded-xl ${view === "calendar" ? "bg-white/10 text-[#0F172A]" : "text-[#64748B]"}`}
+                className={`px-3 py-1.5 text-xs font-mono rounded-xl ${view === "calendar" ? "bg-[#FAF7F2]/10 text-[#111111]" : "text-[#555555]"}`}
               >
                 Calendar
               </button>
               <button 
                 onClick={() => setView("list")}
-                className={`px-3 py-1.5 text-xs font-mono rounded-xl ${view === "list" ? "bg-white/10 text-[#0F172A]" : "text-[#64748B]"}`}
+                className={`px-3 py-1.5 text-xs font-mono rounded-xl ${view === "list" ? "bg-[#FAF7F2]/10 text-[#111111]" : "text-[#555555]"}`}
               >
                 Live Feed
               </button>
@@ -149,7 +149,7 @@ export default function EventTracker() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="flex-1 p-6 rounded-2xl bg-white border border-[#E2E8F0] shadow-2xl shadow-gray-200/50 calendar-premium backdrop-blur-sm"
+                    className="flex-1 p-6 rounded-2xl bg-[#FAF7F2] border border-[#D9CFC1] shadow-2xl shadow-[#D9CFC1]/40 calendar-premium backdrop-blur-sm"
                   >
                     <FullCalendar
                       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -184,7 +184,7 @@ export default function EventTracker() {
                     className="flex-1 flex flex-col gap-8 overflow-y-auto pr-4 custom-scrollbar"
                   >
                     {/* AI Summary Banner */}
-                    <div className="rounded-2xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-[#E2E8F0] p-5 relative overflow-hidden group mb-2 shrink-0">
+                    <div className="rounded-2xl bg-gradient-to-r from-emerald-950/20 via-[#0A1912]/40 to-violet-950/20 border border-[#D9CFC1] p-5 relative overflow-hidden group mb-2 shrink-0">
                       <div className="absolute top-0 right-0 w-96 h-full bg-[#E5A93C]/5 blur-3xl -z-10" />
                       <div className="flex items-start gap-4">
                         <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl-lg text-emerald-400 flex-shrink-0 animate-pulse">
@@ -193,14 +193,14 @@ export default function EventTracker() {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-xs text-emerald-400 uppercase tracking-widest">Live Event Digest</span>
-                            <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded-xl ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5" : "text-[#64748B] border-[#E2E8F0]"}`}>
+                            <span className={`text-[10px] font-mono border px-1.5 py-0.5 rounded-xl ${isLive ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/5" : "text-[#555555] border-[#D9CFC1]"}`}>
                               {isLive ? "ACTIVE TRACKING" : "OFFLINE"}
                             </span>
                           </div>
-                          <h3 className="font-heading font-medium text-base text-[#0F172A]">
+                          <h3 className="font-heading font-medium text-base text-[#111111]">
                             Monitoring {upcomingEvents.length} Upcoming Sector Events
                           </h3>
-                          <p className="text-xs text-[#64748B] leading-relaxed max-w-4xl">
+                          <p className="text-xs text-[#555555] leading-relaxed max-w-4xl">
                             Continuous surveillance of scheduled industry events, regulatory deadlines, and strategic announcements. AI models are evaluating potential market impacts in real-time.
                           </p>
                         </div>
@@ -224,11 +224,11 @@ export default function EventTracker() {
                           >
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/0 via-[#E5A93C]/0 to-violet-500/0 rounded-2xl blur opacity-0 group-hover:opacity-30 group-hover:via-emerald-500/20 transition duration-700 pointer-events-none" />
                             
-                            <div className={`relative h-full flex flex-col justify-between border-[#E2E8F0] hover:border-emerald-500/30 transition-all duration-500 bg-white  overflow-hidden transform-gpu group-hover:-translate-y-1 cursor-pointer p-5 rounded-2xl border ${activeEvent?.id === event.id ? "border-emerald-500/50 shadow-md shadow-emerald-500/20 bg-[#F1F5F9]" : ""}`}>
+                            <div className={`relative h-full flex flex-col justify-between border-[#D9CFC1] hover:border-emerald-500/30 transition-all duration-500 bg-[#FAF7F2]  overflow-hidden transform-gpu group-hover:-translate-y-1 cursor-pointer p-5 rounded-2xl border ${activeEvent?.id === event.id ? "border-emerald-500/50 shadow-md shadow-emerald-500/20 bg-[#EAE4DA]" : ""}`}>
                               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-emerald-500/30 to-transparent transition-colors duration-500" />
                               
                               <div className="flex items-center justify-between text-xs font-mono mb-4">
-                                <span className="text-emerald-400 flex items-center gap-1.5 bg-[#F1F5F9] px-2 py-1 rounded-xl border border-[#E2E8F0] font-bold">
+                                <span className="text-emerald-400 flex items-center gap-1.5 bg-[#EAE4DA] px-2 py-1 rounded-xl border border-[#D9CFC1] font-bold">
                                   {getCountdown(event.date)}
                                 </span>
                                 <span className="px-2.5 py-1 rounded-xl border font-bold text-[10px] tracking-wider uppercase" style={{ borderColor: event.backgroundColor + '40', color: event.backgroundColor, backgroundColor: event.backgroundColor + '10' }}>
@@ -236,19 +236,19 @@ export default function EventTracker() {
                                 </span>
                               </div>
                               
-                              <h4 className="text-base font-heading text-gray-800 group-hover:text-[#0F172A] transition-colors leading-snug mb-3">
+                              <h4 className="text-base font-heading text-gray-800 group-hover:text-[#111111] transition-colors leading-snug mb-3">
                                 {event.title}
                               </h4>
                               
-                              <p className="text-sm text-[#64748B] line-clamp-3 leading-relaxed flex-1">
+                              <p className="text-sm text-[#555555] line-clamp-3 leading-relaxed flex-1">
                                 {event.desc}
                               </p>
 
-                              <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 mt-4 border-t border-[#E2E8F0]">
-                                <span className="px-2 py-1 rounded-xl bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0] flex items-center gap-1">
+                              <div className="flex flex-wrap gap-2 text-[10px] font-mono pt-4 mt-4 border-t border-[#D9CFC1]">
+                                <span className="px-2 py-1 rounded-xl bg-[#EAE4DA] text-[#555555] border border-[#D9CFC1] flex items-center gap-1">
                                   <Calendar className="w-3 h-3 opacity-70" /> {event.date}
                                 </span>
-                                <span className="px-2 py-1 rounded-xl bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0] flex items-center gap-1 ml-auto">
+                                <span className="px-2 py-1 rounded-xl bg-[#EAE4DA] text-[#555555] border border-[#D9CFC1] flex items-center gap-1 ml-auto">
                                   <MapPin className="w-3 h-3 opacity-70" /> {event.location}
                                 </span>
                               </div>
@@ -257,16 +257,16 @@ export default function EventTracker() {
                         ))}
                       </div>
                       {upcomingEvents.length === 0 && (
-                        <div className="p-12 text-center border border-dashed border-[#E2E8F0] rounded-2xl bg-[#F1F5F9]">
-                          <Activity className="w-8 h-8 text-[#64748B] mx-auto mb-3 opacity-50" />
-                          <h3 className="font-heading text-[#0F172A] mb-1">No Upcoming Events</h3>
-                          <p className="text-xs text-[#64748B]">Adjust filters to see more intelligence.</p>
+                        <div className="p-12 text-center border border-dashed border-[#D9CFC1] rounded-2xl bg-[#EAE4DA]">
+                          <Activity className="w-8 h-8 text-[#555555] mx-auto mb-3 opacity-50" />
+                          <h3 className="font-heading text-[#111111] mb-1">No Upcoming Events</h3>
+                          <p className="text-xs text-[#555555]">Adjust filters to see more intelligence.</p>
                         </div>
                       )}
                     </div>
 
                     <div className="mt-4 shrink-0 pb-6">
-                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2 text-[#64748B]">
+                      <h3 className="text-lg font-heading font-semibold mb-6 flex items-center gap-2 text-[#555555]">
                         <Clock className="w-5 h-5" /> Past Events
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-70">
@@ -279,13 +279,13 @@ export default function EventTracker() {
                             onClick={() => setActiveEvent(event)}
                             className="relative group perspective"
                           >
-                            <div className={`relative h-full flex flex-col justify-between border-[#E2E8F0] transition-all duration-300 bg-[#F1F5F9]  overflow-hidden cursor-pointer p-4 rounded-2xl border ${activeEvent?.id === event.id ? "border-gray-300 bg-[#F1F5F9]" : "hover:bg-[#F1F5F9]"}`}>
+                            <div className={`relative h-full flex flex-col justify-between border-[#D9CFC1] transition-all duration-300 bg-[#EAE4DA]  overflow-hidden cursor-pointer p-4 rounded-2xl border ${activeEvent?.id === event.id ? "border-gray-300 bg-[#EAE4DA]" : "hover:bg-[#EAE4DA]"}`}>
                               <div className="flex items-center justify-between text-[10px] font-mono mb-2">
-                                <span className="text-[#64748B] flex items-center gap-1.5 px-2 py-1 rounded-xl border border-[#E2E8F0]">
+                                <span className="text-[#555555] flex items-center gap-1.5 px-2 py-1 rounded-xl border border-[#D9CFC1]">
                                   {getCountdown(event.date)}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-heading text-[#64748B] line-through decoration-white/20 line-clamp-2">
+                              <h4 className="text-sm font-heading text-[#555555] line-through decoration-white/20 line-clamp-2">
                                 {event.title}
                               </h4>
                             </div>
@@ -300,11 +300,11 @@ export default function EventTracker() {
 
             {/* Event Details Panel */}
             <div className="h-[calc(100vh-8rem)]">
-              <div className="h-full rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent border border-[#E2E8F0] p-6 flex flex-col relative overflow-hidden ">
+              <div className="h-full rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent border border-[#D9CFC1] p-6 flex flex-col relative overflow-hidden ">
                 <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-50" />
                 
                 <div className="flex justify-between items-center mb-8">
-                  <span className="font-mono text-xs text-[#64748B] uppercase tracking-widest flex items-center gap-2">
+                  <span className="font-mono text-xs text-[#555555] uppercase tracking-widest flex items-center gap-2">
                     <Activity className="w-4 h-4 text-emerald-500" /> Event Intelligence
                   </span>
                   {isLive && (
@@ -330,7 +330,7 @@ export default function EventTracker() {
                           <span className="px-2.5 py-1 rounded-xl border font-mono text-[10px] uppercase font-bold tracking-wider" style={{ borderColor: activeEvent.backgroundColor + '40', color: activeEvent.backgroundColor, backgroundColor: activeEvent.backgroundColor + '10' }}>
                             {activeEvent.sector}
                           </span>
-                          <span className={`px-2.5 py-1 rounded-xl border font-mono text-[10px] uppercase font-bold tracking-wider ${activeEvent.status === 'Completed' ? 'bg-[#F1F5F9] border-[#E2E8F0] text-[#64748B]' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
+                          <span className={`px-2.5 py-1 rounded-xl border font-mono text-[10px] uppercase font-bold tracking-wider ${activeEvent.status === 'Completed' ? 'bg-[#EAE4DA] border-[#D9CFC1] text-[#555555]' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
                             {activeEvent.status}
                           </span>
                           {activeEvent.severity === 'High' && (
@@ -340,20 +340,20 @@ export default function EventTracker() {
                           )}
                         </div>
 
-                        <h3 className="text-2xl font-heading font-bold text-[#0F172A] leading-tight">
+                        <h3 className="text-2xl font-heading font-bold text-[#111111] leading-tight">
                           {activeEvent.title}
                         </h3>
 
-                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-[#E2E8F0]">
+                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-[#D9CFC1]">
                           <div className="space-y-1">
-                            <span className="text-[10px] font-mono text-[#64748B] uppercase tracking-widest">Date</span>
+                            <span className="text-[10px] font-mono text-[#555555] uppercase tracking-widest">Date</span>
                             <div className="text-sm font-medium flex items-center gap-2">
                               <Calendar className="w-4 h-4 text-emerald-500" />
                               {activeEvent.date}
                             </div>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-[10px] font-mono text-[#64748B] uppercase tracking-widest">Location</span>
+                            <span className="text-[10px] font-mono text-[#555555] uppercase tracking-widest">Location</span>
                             <div className="text-sm font-medium flex items-center gap-2">
                               <MapPin className="w-4 h-4 text-amber-500" />
                               {activeEvent.location}
@@ -364,17 +364,17 @@ export default function EventTracker() {
 
                       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6">
                         <div className="space-y-2">
-                          <h4 className="text-xs font-mono text-[#64748B] uppercase tracking-widest">Executive Summary</h4>
-                          <p className="text-sm text-[#0F172A]/80 leading-relaxed">
+                          <h4 className="text-xs font-mono text-[#555555] uppercase tracking-widest">Executive Summary</h4>
+                          <p className="text-sm text-[#111111]/80 leading-relaxed">
                             {activeEvent.desc}
                           </p>
                         </div>
                         
-                        <div className="p-4 rounded-2xl bg-[#F1F5F9] border border-[#E2E8F0] space-y-3">
+                        <div className="p-4 rounded-2xl bg-[#EAE4DA] border border-[#D9CFC1] space-y-3">
                           <h4 className="text-xs font-mono text-emerald-400 uppercase tracking-widest flex items-center gap-2">
                             <AlertTriangle className="w-3.5 h-3.5" /> AI Risk Assessment
                           </h4>
-                          <p className="text-xs text-[#64748B] leading-relaxed">
+                          <p className="text-xs text-[#555555] leading-relaxed">
                             {activeEvent.status === "Completed" 
                               ? "Event has concluded. Post-event structural analysis indicates standard market absorption with no critical supply chain disruptions." 
                               : "Upcoming event requires monitoring. High probability of localized logistics impact and short-term volatility in respective sector indexes."}
@@ -382,10 +382,10 @@ export default function EventTracker() {
                         </div>
                       </div>
 
-                      <div className="mt-6 pt-6 border-t border-[#E2E8F0]">
+                      <div className="mt-6 pt-6 border-t border-[#D9CFC1]">
                         <button 
                           onClick={() => generateEventReportPDF(activeEvent)}
-                          className="w-full py-3 px-4 bg-[#F1F5F9] hover:bg-white/10 text-[#0F172A] border border-[#E2E8F0] rounded-xl-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
+                          className="w-full py-3 px-4 bg-[#EAE4DA] hover:bg-[#FAF7F2]/10 text-[#111111] border border-[#D9CFC1] rounded-xl-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
                         >
                           Generate Detailed Report (PDF)
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -399,8 +399,8 @@ export default function EventTracker() {
                       animate={{ opacity: 1 }}
                       className="flex-1 flex flex-col items-center justify-center text-center space-y-4 opacity-50"
                     >
-                      <Calendar className="w-12 h-12 text-[#64748B]" />
-                      <p className="text-sm font-mono text-[#64748B]">Select an event from the calendar or timeline to view detailed intelligence.</p>
+                      <Calendar className="w-12 h-12 text-[#555555]" />
+                      <p className="text-sm font-mono text-[#555555]">Select an event from the calendar or timeline to view detailed intelligence.</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

@@ -119,7 +119,7 @@ export default function TenderIntel() {
   };
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#FAF7F2] overflow-hidden font-sans">
       <Sidebar />
       
       <main className="flex-1 flex flex-col relative overflow-hidden">
@@ -127,12 +127,12 @@ export default function TenderIntel() {
         <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/40  z-10">
           <div className="flex items-center gap-4 w-full max-w-md">
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#555555]" />
               <Input 
                 placeholder="Search tender ID, issuer, keyword..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-[#F1F5F9] border-[#E2E8F0] focus-visible:ring-primary/50 h-9 font-mono text-sm"
+                className="pl-9 bg-[#EAE4DA] border-[#D9CFC1] focus-visible:ring-primary/50 h-9 font-mono text-sm"
               />
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function TenderIntel() {
           <div className="flex items-center gap-4">
             <button 
               onClick={handleExportCSV}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl-md bg-[#F1F5F9] hover:bg-white/10 border border-[#E2E8F0] text-xs font-mono font-medium transition-colors text-[#0F172A]"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl-md bg-[#EAE4DA] hover:bg-[#FAF7F2]/10 border border-[#D9CFC1] text-xs font-mono font-medium transition-colors text-[#111111]"
             >
               <Download className="w-3.5 h-3.5" /> {exportSuccess ? "CSV Exported!" : "Export CSV"}
             </button>
@@ -157,18 +157,18 @@ export default function TenderIntel() {
                 <h2 className="text-2xl font-bold font-heading tracking-tight flex items-center gap-2">
                   <Briefcase className="w-6 h-6 text-primary" /> Active Tender Intelligence
                 </h2>
-                <p className="text-sm text-[#64748B] mt-1">Aggregated bid portals tracking critical multi-million dollar industrial requests.</p>
+                <p className="text-sm text-[#555555] mt-1">Aggregated bid portals tracking critical multi-million dollar industrial requests.</p>
               </div>
 
               {/* Sector Selector */}
               <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-[#64748B]" />
-                <div className="flex rounded-xl-lg bg-[#F1F5F9] p-1 border border-[#E2E8F0] font-mono text-xs">
+                <Filter className="w-4 h-4 text-[#555555]" />
+                <div className="flex rounded-xl-lg bg-[#EAE4DA] p-1 border border-[#D9CFC1] font-mono text-xs">
                   {["All", "Gas & LNG", "EPC & Infra", "Pharma API"].map((sector) => (
                     <button
                       key={sector}
                       onClick={() => setSelectedSector(sector)}
-                      className={`px-3 py-1.5 rounded-xl-md transition-colors ${selectedSector === sector ? "bg-white/10 text-[#0F172A] font-bold" : "text-[#64748B] hover:text-[#0F172A]"}`}
+                      className={`px-3 py-1.5 rounded-xl-md transition-colors ${selectedSector === sector ? "bg-[#FAF7F2]/10 text-[#111111] font-bold" : "text-[#555555] hover:text-[#111111]"}`}
                     >
                       {sector}
                     </button>
@@ -179,13 +179,13 @@ export default function TenderIntel() {
 
             {/* AI Tender Match Alert */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="col-span-2 p-5 rounded-2xl glass border border-[#E2E8F0] relative overflow-hidden">
+              <div className="col-span-2 p-5 rounded-2xl glass border border-[#D9CFC1] relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#E5A93C]/5 rounded-xl-bl-full -z-10" />
                 <h3 className="font-heading font-medium text-base mb-2 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-[#E5A93C]" /> AI Match Recommendation
                 </h3>
-                <p className="text-xs text-[#64748B] leading-relaxed">
-                  Based on your watchlisted firms, the <span className="text-[#0F172A] font-semibold">{filteredTenders.length > 0 ? filteredTenders[0].id : "TEN-9082"} API unit</span> has a high strategic affinity for sub-contracting logistics, and matches your regional footprint layout perfectly. Recommend immediate due diligence.
+                <p className="text-xs text-[#555555] leading-relaxed">
+                  Based on your watchlisted firms, the <span className="text-[#111111] font-semibold">{filteredTenders.length > 0 ? filteredTenders[0].id : "TEN-9082"} API unit</span> has a high strategic affinity for sub-contracting logistics, and matches your regional footprint layout perfectly. Recommend immediate due diligence.
                 </p>
               </div>
 
@@ -195,7 +195,7 @@ export default function TenderIntel() {
                 </div>
                 <div>
                   <span className="text-3xl font-bold font-mono text-[#E5A93C]">₹{formattedTotal}Cr</span>
-                  <p className="text-[10px] text-[#64748B] mt-1 uppercase font-mono">
+                  <p className="text-[10px] text-[#555555] mt-1 uppercase font-mono">
                     {isLive ? "LIVE DATABASE CONNECTED" : "CALCULATING..."}
                   </p>
                 </div>
@@ -203,39 +203,39 @@ export default function TenderIntel() {
             </div>
 
             {/* High Density Table */}
-            <div className="rounded-2xl glass border border-[#E2E8F0] overflow-hidden">
+            <div className="rounded-2xl glass border border-[#D9CFC1] overflow-hidden">
               <Table>
-                <TableHeader className="bg-[#F1F5F9]">
-                  <TableRow className="border-b border-[#E2E8F0]">
-                    <TableHead className="font-mono text-xs text-[#64748B] cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('id')}>Tender ID</TableHead>
-                    <TableHead className="font-mono text-xs text-[#64748B] cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('title')}>Tender Description</TableHead>
-                    <TableHead className="font-mono text-xs text-[#64748B] cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('issuer')}>Issuer / Agent</TableHead>
-                    <TableHead className="font-mono text-xs text-[#64748B] cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('value')}>Est. Value</TableHead>
-                    <TableHead className="font-mono text-xs text-[#64748B] cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('region')}>Region</TableHead>
-                    <TableHead className="font-mono text-xs text-[#64748B] cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('status')}>Status</TableHead>
-                    <TableHead className="font-mono text-xs text-[#64748B] cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('deadline')}>Deadline</TableHead>
-                    <TableHead className="font-mono text-xs text-[#64748B] text-right cursor-pointer hover:text-[#0F172A]" onClick={() => handleSort('matchScore')}>Match</TableHead>
+                <TableHeader className="bg-[#EAE4DA]">
+                  <TableRow className="border-b border-[#D9CFC1]">
+                    <TableHead className="font-mono text-xs text-[#555555] cursor-pointer hover:text-[#111111]" onClick={() => handleSort('id')}>Tender ID</TableHead>
+                    <TableHead className="font-mono text-xs text-[#555555] cursor-pointer hover:text-[#111111]" onClick={() => handleSort('title')}>Tender Description</TableHead>
+                    <TableHead className="font-mono text-xs text-[#555555] cursor-pointer hover:text-[#111111]" onClick={() => handleSort('issuer')}>Issuer / Agent</TableHead>
+                    <TableHead className="font-mono text-xs text-[#555555] cursor-pointer hover:text-[#111111]" onClick={() => handleSort('value')}>Est. Value</TableHead>
+                    <TableHead className="font-mono text-xs text-[#555555] cursor-pointer hover:text-[#111111]" onClick={() => handleSort('region')}>Region</TableHead>
+                    <TableHead className="font-mono text-xs text-[#555555] cursor-pointer hover:text-[#111111]" onClick={() => handleSort('status')}>Status</TableHead>
+                    <TableHead className="font-mono text-xs text-[#555555] cursor-pointer hover:text-[#111111]" onClick={() => handleSort('deadline')}>Deadline</TableHead>
+                    <TableHead className="font-mono text-xs text-[#555555] text-right cursor-pointer hover:text-[#111111]" onClick={() => handleSort('matchScore')}>Match</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {sortedTenders.map((tender) => (
                     <TableRow 
                       key={tender.id} 
-                      className="border-b border-[#E2E8F0] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                      className="border-b border-[#D9CFC1] hover:bg-[#EAE4DA] transition-colors cursor-pointer"
                       onClick={() => setSelectedTender(tender)}
                     >
                       <TableCell className="font-mono text-xs font-semibold text-primary">{tender.id}</TableCell>
                       <TableCell className="max-w-[250px]">
                         <div className="flex flex-col gap-1 overflow-hidden pr-4">
                           <span className="text-sm font-medium leading-snug truncate block">{tender.title}</span>
-                          <span className="text-[10px] self-start px-2 py-0.5 rounded-xl border font-bold font-mono text-[9px] scale-95 origin-left tracking-wide uppercase mt-1 leading-none shadow-sm shadow-black/10 select-none cursor-default bg-[#F1F5F9] block border-[#E2E8F0]">
+                          <span className="text-[10px] self-start px-2 py-0.5 rounded-xl border font-bold font-mono text-[9px] scale-95 origin-left tracking-wide uppercase mt-1 leading-none shadow-sm shadow-black/10 select-none cursor-default bg-[#EAE4DA] block border-[#D9CFC1]">
                             {tender.sector}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs text-[#475569] font-medium">{tender.issuer}</TableCell>
-                      <TableCell className="font-mono text-xs font-bold text-[#0F172A]">{tender.value}</TableCell>
-                      <TableCell className="text-xs text-[#475569] font-mono">
+                      <TableCell className="text-xs text-[#333333] font-medium">{tender.issuer}</TableCell>
+                      <TableCell className="font-mono text-xs font-bold text-[#111111]">{tender.value}</TableCell>
+                      <TableCell className="text-xs text-[#333333] font-mono">
                         <span className="inline-flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-[#E5A93C]" /> {tender.region}
                         </span>
@@ -245,7 +245,7 @@ export default function TenderIntel() {
                           {tender.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-[#475569]">
+                      <TableCell className="font-mono text-xs text-[#333333]">
                         <span className="inline-flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {tender.deadline}
                         </span>
@@ -256,7 +256,7 @@ export default function TenderIntel() {
 
                   {sortedTenders.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-12 text-[#64748B] font-mono text-xs">
+                      <TableCell colSpan={8} className="text-center py-12 text-[#555555] font-mono text-xs">
                         No active tenders match the search criteria.
                       </TableCell>
                     </TableRow>
@@ -271,8 +271,8 @@ export default function TenderIntel() {
 
       {/* Tender Detail Panel */}
       {selectedTender && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-white backdrop-blur-sm">
-          <div className="w-full max-w-2xl h-full bg-[#ffffff] border-l border-[#E2E8F0] p-8 overflow-y-auto flex flex-col justify-between shadow-2xl shadow-gray-200/50 animate-in slide-in-from-right duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-[#FAF7F2] backdrop-blur-sm">
+          <div className="w-full max-w-2xl h-full bg-[#ffffff] border-l border-[#D9CFC1] p-8 overflow-y-auto flex flex-col justify-between shadow-2xl shadow-[#D9CFC1]/40 animate-in slide-in-from-right duration-300">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <Badge variant="outline" className="text-[#E5A93C] border-[#E5A93C]/30 bg-[#E5A93C]/10 font-mono text-xs">
@@ -280,36 +280,36 @@ export default function TenderIntel() {
                 </Badge>
                 <button 
                   onClick={() => setSelectedTender(null)}
-                  className="p-2 bg-[#F1F5F9] hover:bg-white/10 rounded-xl-lg text-[#64748B] hover:text-[#0F172A] transition-colors"
+                  className="p-2 bg-[#EAE4DA] hover:bg-[#FAF7F2]/10 rounded-xl-lg text-[#555555] hover:text-[#111111] transition-colors"
                 >
                   ✕
                 </button>
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold font-heading text-[#0F172A]">{selectedTender.title}</h2>
-                <div className="flex flex-wrap gap-4 text-xs font-mono text-[#64748B] border-y border-[#E2E8F0] py-4">
+                <h2 className="text-2xl font-bold font-heading text-[#111111]">{selectedTender.title}</h2>
+                <div className="flex flex-wrap gap-4 text-xs font-mono text-[#555555] border-y border-[#D9CFC1] py-4">
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-4 h-4 text-emerald-400" />
-                    <span className="text-[#0F172A]/80">{selectedTender.id}</span>
+                    <span className="text-[#111111]/80">{selectedTender.id}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-emerald-400" />
-                    <span>Deadline: <span className="text-[#0F172A]/80">{selectedTender.deadline}</span></span>
+                    <span>Deadline: <span className="text-[#111111]/80">{selectedTender.deadline}</span></span>
                   </div>
                   <div className="flex items-center gap-2">
                     <IndianRupee className="w-4 h-4 text-emerald-400" />
-                    <span className="text-[#0F172A]/80 font-bold">{selectedTender.value}</span>
+                    <span className="text-[#111111]/80 font-bold">{selectedTender.value}</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-mono text-[#64748B] uppercase tracking-widest">Tender Overview</h3>
-                <p className="text-sm text-[#0F172A]/80 leading-relaxed">
+                <h3 className="text-sm font-mono text-[#555555] uppercase tracking-widest">Tender Overview</h3>
+                <p className="text-sm text-[#111111]/80 leading-relaxed">
                   This tender is issued by {selectedTender.issuer} for operations in the {selectedTender.region}. The current status of this tender is marked as {selectedTender.status}.
                 </p>
-                <p className="text-sm text-[#0F172A]/80 leading-relaxed">
+                <p className="text-sm text-[#111111]/80 leading-relaxed">
                   Our strategic AI analysis engine gives your firm a <strong>{selectedTender.matchScore}</strong> match score for this opportunity, indicating high alignment with your recent operational capabilities and geographic footprint.
                 </p>
               </div>
@@ -317,13 +317,13 @@ export default function TenderIntel() {
 
             <div className="mt-8 flex gap-4">
               <button 
-                className="flex-1 py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-[#0F172A] rounded-xl-lg text-sm font-semibold transition-all duration-300"
+                className="flex-1 py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-[#111111] rounded-xl-lg text-sm font-semibold transition-all duration-300"
               >
                 Initiate Bid Protocol
               </button>
               <button 
                 onClick={() => generateTenderDossierPDF(selectedTender)}
-                className="flex-1 py-3 px-4 bg-[#F1F5F9] hover:bg-white/10 text-[#0F172A] border border-[#E2E8F0] rounded-xl-lg text-sm font-semibold transition-all duration-300"
+                className="flex-1 py-3 px-4 bg-[#EAE4DA] hover:bg-[#FAF7F2]/10 text-[#111111] border border-[#D9CFC1] rounded-xl-lg text-sm font-semibold transition-all duration-300"
               >
                 Download Dossier (PDF)
               </button>
