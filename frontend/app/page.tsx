@@ -316,31 +316,31 @@ export default function LandingPage() {
       
       {/* 1. Preloader Overlay */}
       {!welcomeComplete && (
-        <div className="preloader-wrap fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#F2EFE9] [clip-path:polygon(0%_0%,_100%_0%,_100%_100%,_0%_100%)]">
+        <div className="preloader-wrap fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FFFFFF] [clip-path:polygon(0%_0%,_100%_0%,_100%_100%,_0%_100%)]">
           <div className="text-center px-4 max-w-2xl relative z-10 flex flex-col items-center">
             
-            <div className="preloader-text-1 font-mono text-[#111111] text-xs uppercase tracking-[0.3em] mb-4">
+            <div className="preloader-text-1 font-mono text-[#FF3366] text-xs uppercase tracking-[0.3em] mb-4">
               Secure Stream Established
             </div>
             
-            <h2 className="preloader-text-2 font-heading text-lg md:text-xl text-[#111111] tracking-wider font-light mb-8">
+            <h2 className="preloader-text-2 font-heading text-lg md:text-xl text-[#33CCFF] tracking-wider font-bold mb-8">
               Gas / EPC / Pharmaceutical Core API
             </h2>
 
             <div className="preloader-core-message flex flex-col items-center gap-6">
-              <div className="w-20 h-[1px] bg-gradient-to-r from-transparent via-[#111111] to-transparent" />
+              <div className="w-20 h-[1px] bg-gradient-to-r from-transparent via-[#FFCC00] to-transparent" />
               <h1 className="font-heading text-4xl md:text-6xl text-[#111111] font-extrabold tracking-tight uppercase leading-none">
                 DECISION MAKER<br />
-                <span className="text-[#111111]">REDISTRIBUTED.</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF3366] via-[#FFCC00] to-[#00FF99]">REDISTRIBUTED.</span>
               </h1>
-              <p className="font-mono text-xs text-[#333333] tracking-widest uppercase mt-4">
+              <p className="font-mono text-xs text-[#555555] tracking-widest uppercase mt-4">
                 Booting IntelliSector System Core
               </p>
             </div>
           </div>
           
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(17,17,17,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(17,17,17,0.015)_1px,transparent_1px)] bg-[size:40px_40px]" />
-          <div className="absolute top-0 left-0 w-full h-1 bg-[#111111]/20 shadow-[0_0_15px_rgba(17,17,17,0.4)] animate-bounce" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(51,204,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(51,204,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FF3366] via-[#FFCC00] to-[#00FF99] shadow-[0_0_20px_rgba(255,51,102,0.4)] animate-bounce" />
         </div>
       )}
 
@@ -368,7 +368,7 @@ export default function LandingPage() {
         <div className="pointer-events-auto">
           <Link href="/dashboard">
             <button className="relative group px-5 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#D9CFC1] hover:border-[#111111] transition-all duration-300 font-mono text-xs uppercase tracking-widest text-[#111111] overflow-hidden backdrop-blur-sm cursor-pointer">
-              <span className="relative z-10 flex items-center gap-2 group-hover:text-[#111111] transition-colors font-bold">
+              <span className="relative z-10 flex items-center gap-2 group-hover:text-[#FAF7F2] transition-colors font-bold">
                 Command Center <ArrowRight className="w-3.5 h-3.5" />
               </span>
               <div className="absolute inset-0 bg-[#111111] translate-y-full group-hover:translate-y-0 transition-transform duration-300 -z-0" />
@@ -423,12 +423,12 @@ export default function LandingPage() {
 
           <div className="hero-sub mt-10 flex flex-wrap gap-4">
             <Link href="/dashboard">
-              <button className="px-8 py-4 rounded-xl bg-[#111111] text-[#111111] font-extrabold text-xs tracking-widest uppercase hover:bg-[#FAF7F2] hover:text-[#111111] transition-colors duration-300 shadow-xl shadow-[#D9CFC1] flex items-center gap-3 cursor-pointer">
+              <button className="px-8 py-4 rounded-xl bg-[#111111] text-[#FAF7F2] font-extrabold text-xs tracking-widest uppercase hover:bg-[#FAF7F2] hover:text-[#111111] border hover:border-[#111111] transition-colors duration-300 shadow-xl shadow-[#D9CFC1] flex items-center gap-3 cursor-pointer">
                 Enter Command Center <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
             <a href="#about">
-              <button className="px-8 py-4 rounded-xl bg-[#FAF7F2]/5 border border-[#D9CFC1] hover:border-gray-300 text-[#111111] font-extrabold text-xs tracking-widest uppercase transition-colors duration-300 cursor-pointer">
+              <button className="px-8 py-4 rounded-xl bg-[#FAF7F2]/5 border border-[#111111] hover:bg-[#111111] hover:text-[#FAF7F2] text-[#111111] font-extrabold text-xs tracking-widest uppercase transition-colors duration-300 cursor-pointer">
                 Read Manifesto
               </button>
             </a>
@@ -715,7 +715,7 @@ export default function LandingPage() {
             <button 
               onMouseMove={handleCtaMouseMove}
               onMouseLeave={handleCtaMouseLeave}
-              className="relative px-10 py-5 bg-[#111111] text-[#111111] font-extrabold text-xs tracking-widest uppercase rounded-xl hover:bg-[#FAF7F2] transition-colors duration-300 shadow-2xl shadow-[#D9CFC1]/40 shadow-gray-300 overflow-hidden cursor-pointer"
+              className="relative px-10 py-5 bg-[#111111] text-[#FAF7F2] font-extrabold text-xs tracking-widest uppercase rounded-xl hover:bg-[#FAF7F2] hover:text-[#111111] border border-transparent hover:border-[#111111] transition-colors duration-300 shadow-2xl shadow-[#D9CFC1]/40 shadow-gray-300 overflow-hidden cursor-pointer"
             >
               <motion.div
                 className="relative z-10 flex items-center gap-3"
