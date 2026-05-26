@@ -40,9 +40,9 @@ export default function Dashboard() {
           if (analyticsData.monthly.length > 0) {
             const lastMonth = analyticsData.monthly[analyticsData.monthly.length - 1];
             setSectorHeatmap([
-              { name: "Gas Distribution", value: lastMonth.gas, color: "#10B981" },
-              { name: "EPC & Infra", value: lastMonth.epc, color: "#F59E0B" },
-              { name: "Pharma API", value: lastMonth.pharma, color: "#8B5CF6" }
+              { name: "Gas Distribution", value: lastMonth.gas, color: "#111111" },
+              { name: "EPC & Infra", value: lastMonth.epc, color: "#333333" },
+              { name: "Pharma API", value: lastMonth.pharma, color: "#555555" }
             ]);
           }
         }
@@ -65,10 +65,10 @@ export default function Dashboard() {
             link: art.link,
             risk: "Low",
             color: art.sector === "Gas & LNG" 
-              ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/5"
+              ? "border-[#111111]/30 text-[#111111] bg-[#111111]/5"
               : art.sector === "Pharma API"
-              ? "border-violet-500/30 text-violet-400 bg-violet-500/5"
-              : "border-amber-500/30 text-amber-400 bg-amber-500/5"
+              ? "border-[#555555]/30 text-[#555555] bg-[#555555]/5"
+              : "border-[#333333]/30 text-[#333333] bg-[#333333]/5"
           }));
           setFeed(mappedFeed);
           setIsLive(true);
@@ -143,7 +143,7 @@ export default function Dashboard() {
                     <p className="text-sm text-[#555555] mt-1">Real-time intelligence overview across Gas, EPC, and Pharma sectors.</p>
                   </div>
                   <div className="flex gap-2 text-xs font-mono">
-                    <span className={`flex items-center gap-1.5 px-2 py-1 rounded-xl-md border ${isLive ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 animate-pulse" : "bg-[#EAE4DA] text-[#555555] border-[#D9CFC1]"}`}>
+                    <span className={`flex items-center gap-1.5 px-2 py-1 rounded-xl-md border ${isLive ? "bg-[#111111]/10 text-[#111111] border-[#111111]/20 animate-pulse" : "bg-[#EAE4DA] text-[#555555] border-[#D9CFC1]"}`}>
                       {isLive ? "● SECURE FEED LIVE" : "OFFLINE FALLBACK"}
                     </span>
                     <span className="px-2 py-1 rounded-xl-md bg-[#EAE4DA] text-[#555555] border border-[#D9CFC1]">
@@ -160,7 +160,7 @@ export default function Dashboard() {
                   <div className="lg:col-span-2 space-y-6">
                     {/* Recharts Heatmap */}
                     <div className="h-96 rounded-2xl glass border border-[#D9CFC1] p-5 flex flex-col relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -z-10" />
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-[#111111]/5 rounded-full blur-3xl -z-10" />
                       <h3 className="font-heading font-medium text-lg mb-4 flex items-center justify-between">
                         <span>Sector Distribution Analysis</span>
                         <span className="text-xs font-mono text-[#555555]">Market share (%)</span>
@@ -176,7 +176,7 @@ export default function Dashboard() {
                                 contentStyle={{ background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px" }} 
                                 labelClassName="font-mono text-[#111111]"
                               />
-                              <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]}>
+                              <Bar dataKey="value" fill="#111111" radius={[4, 4, 0, 0]}>
                                 {sectorHeatmap.map((entry, idx) => (
                                   <Cell key={`cell-${idx}`} fill={entry.color} />
                                 ))}
@@ -189,7 +189,7 @@ export default function Dashboard() {
                     
                     {/* Recharts Line */}
                     <div className="h-96 rounded-2xl glass border border-[#D9CFC1] p-5 flex flex-col relative overflow-hidden">
-                      <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-500/5 rounded-full blur-3xl -z-10" />
+                      <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#555555]/5 rounded-full blur-3xl -z-10" />
                       <h3 className="font-heading font-medium text-lg mb-4 flex items-center justify-between">
                         <span>Tender Value Analytics (₹ Cr)</span>
                         <span className="text-xs font-mono text-primary flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> +24% QoQ</span>
@@ -205,7 +205,7 @@ export default function Dashboard() {
                                 contentStyle={{ background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px" }}
                                 labelClassName="font-mono text-[#111111]"
                               />
-                              <Line type="monotone" dataKey="value" stroke="#8B5CF6" strokeWidth={3} dot={{ fill: "#8B5CF6", strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                              <Line type="monotone" dataKey="value" stroke="#555555" strokeWidth={3} dot={{ fill: "#555555", strokeWidth: 2 }} activeDot={{ r: 6 }} />
                             </LineChart>
                           </ResponsiveContainer>
                         </div>
@@ -216,7 +216,7 @@ export default function Dashboard() {
                   {/* Right Column (Live Feeds) */}
                   <div className="space-y-6">
                     <div className="h-[49rem] rounded-2xl glass border border-[#D9CFC1] p-5 flex flex-col relative overflow-hidden">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -z-10" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#333333]/5 rounded-full blur-3xl -z-10" />
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-heading font-medium text-lg flex items-center gap-2">
                           Live Intelligence Feed
@@ -231,9 +231,9 @@ export default function Dashboard() {
                             href={item.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-4 rounded-2xl bg-[#FAF7F2]  border border-[#D9CFC1] hover:border-[#E5A93C]/30 hover:bg-[#FAF7F2] transition-all duration-300 flex flex-col gap-2 relative group transform-gpu hover:-translate-y-1 hover:shadow-lg shadow-[#D9CFC1]/40 cursor-pointer"
+                            className="p-4 rounded-2xl bg-[#FAF7F2]  border border-[#D9CFC1] hover:border-[#111111]/30 hover:bg-[#FAF7F2] transition-all duration-300 flex flex-col gap-2 relative group transform-gpu hover:-translate-y-1 hover:shadow-lg shadow-[#D9CFC1]/40 cursor-pointer"
                           >
-                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-[#E5A93C]/30 to-transparent transition-colors duration-500" />
+                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 group-hover:via-[#111111]/30 to-transparent transition-colors duration-500" />
                             <div className="flex justify-between items-center text-xs font-mono">
                               <span className="text-[#555555]">{item.time}</span>
                               <span className={`px-2 py-0.5 rounded-xl border ${item.color}`}>
@@ -247,7 +247,7 @@ export default function Dashboard() {
                               {item.summary}
                             </p>
                             <div className="flex justify-between items-center mt-2 pt-3 border-t border-[#D9CFC1] text-[10px] font-mono">
-                              <span className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-xl border border-emerald-500/20 flex items-center gap-1">
+                              <span className="text-[#111111] bg-[#111111]/10 px-2 py-0.5 rounded-xl border border-[#111111]/20 flex items-center gap-1">
                                 <Info className="w-3 h-3" /> Sentiment: Positive
                               </span>
                               {item.risk !== "None" && (
@@ -261,7 +261,7 @@ export default function Dashboard() {
 
                         <div className="p-4 rounded-xl-lg border border-dashed border-[#D9CFC1] flex flex-col items-center justify-center text-center text-xs text-[#555555]">
                           <p>Waiting for incoming intelligence streams...</p>
-                          <span className="mt-1 font-mono text-[10px] text-emerald-500 animate-pulse">● POLLING RSS FEEDS</span>
+                          <span className="mt-1 font-mono text-[10px] text-[#111111] animate-pulse">● POLLING RSS FEEDS</span>
                         </div>
                       </div>
                     </div>
