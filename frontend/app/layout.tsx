@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
-import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
+
 
 const inter = Inter({
   variable: "--font-sans",
@@ -35,7 +36,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-[#FAF7F2] text-foreground selection:bg-primary/20 selection:text-primary">
-        {children}
+                  {children}
+
+          <Analytics />
       </body>
     </html>
   );

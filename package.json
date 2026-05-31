@@ -8,6 +8,7 @@
     "start:frontend": "npm run start --prefix frontend"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "concurrently": "^8.2.2"
   },
   "devDependencies": {
